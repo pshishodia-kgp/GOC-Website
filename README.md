@@ -1,14 +1,14 @@
 # GOC-Website
-This repo contains the code for official website of Grimoire of Code
+This repo contains the code for official website of Grimoire of Code.
 
 ## Goals
 * Integrating [Facebook's Graph Api](https://developers.facebook.com/docs/graph-api/) for 
-  * Login, Liking blogs/problems, Comments
+  * Login, Liking blogs/problems, Comments.
   * Can later be replaced with our own code for upvoting/downvoting posts/problems. 
   
 * Interview Experiences Blog's 
   * Must follow the same structure. 
-    * Prelude 
+    * Prelude.
     * Shortlisting Rounds
       * Overview
       * Company1    : Details
@@ -29,7 +29,7 @@ This repo contains the code for official website of Grimoire of Code
   * Expected Solution
   
 * Advanced Search 
-  * Both on Problem and Interviews Page
+  * Both on Problem and Interviews Page.
   * Can search by company name and tags.
   
 * Alumnus and the company they belong to
