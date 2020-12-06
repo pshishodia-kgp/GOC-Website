@@ -17,6 +17,13 @@ def home():
 def blogList():
     return render_template('allblogs.j2', title = 'Blogs')
 
+@app.route('/login')
+def login(): 
+    pass
+
+@app.route('/signup')
+def signup(): 
+    pass
 
 if __name__ == '__main__':
     app.debug = True
