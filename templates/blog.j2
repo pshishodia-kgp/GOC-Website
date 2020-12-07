@@ -1,0 +1,75 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class="container">
+<div class = "col-md-12"> 
+    <hr> 
+    <h2><a href = "{{'/blog?blog_id=' + blog.id}}">{{ blog.title }}</a></h2> 
+    <span >{{ blog.published_at }} by
+        <a href = "{{ '/profile/' + blog.author}}">{{ blog.author }}</a> 
+    </span> 
+    <hr> 
+    <p>{{ blog.content }}</p> 
+
+    <hr> 
+    <div id = "shortlisting-rounds"> 
+        <h4> ShortListing Rounds </h4> 
+        <p>{{ blog.shortlisting_content }}</p> 
+
+        {% for round in blog.shortlisting_rounds %}
+            <div class = "card" style = "margin-bottom: 5px">
+                <h6 class = "card-header">
+                    <button class = "btn btn-link collapsed" data-toggle="collapse" 
+                    data-target="{{'#' + round.company_name + '-content'}}"
+                    id = "{{round.company_name}}">
+                    {{ round.company_name }}</button> 
+                </h6>
+
+                <div class = "card-body collapse" 
+                    id = "{{round.company_name + '-content'}}" data-parent = "{{'#' + round.company_name}}">
+                    <p class = "card-text">{{ round.content }}</p>     
+                    </div> 
+            </div> 
+        {% endfor %}
+    </div> 
+    <hr> 
+    <div id = "interview-rounds"> 
+        <h4> Interview Rounds </h4> 
+        <p>{{ blog.interview_content }}</p> 
+
+        {% for round in blog.interview_rounds %}
+            <div class = "card" style = "margin-bottom: 5px">
+                <h6 class = "card-header">
+                    <button class = "btn btn-link collapsed" data-toggle="collapse" 
+                    data-target="{{'#' + round.company_name + '-content'}}"
+                    id = "{{round.company_name}}">
+                    {{ round.company_name }}</button> 
+                </h6>
+
+                <div class = "card-body collapse" 
+                    id = "{{round.company_name + '-content'}}" data-parent = "{{'#' + round.company_name}}">
+                    <p class = "card-text">{{ round.content }}</p>     
+                    </div> 
+            </div> 
+        {% endfor %}
+    </div> 
+
+    <div class = "pull-right"> 
+        {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
+        {% for i in range(blog.tags|length) %}
+        <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ blog.tags[i] }}</span> 
+        {% endfor %}
+    </div> 
+    </div> 
+    <hr> 
+    
+    <div class = "comments">
+        <h5> Comments... </h5> 
+        <p> Yet to be implemented (Can integrate using facebook's api?) </p>  
+    </div> 
+
+</div> 
+</div> 
+
+
+{% endblock %}

@@ -1,5 +1,5 @@
 import os, json
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 
 TEMPLATE_DIR = os.path.join("..", "templates")
 STATIC_DIR = os.path.join("..", "static")
@@ -29,6 +29,24 @@ def blogList():
     
     allTags = ['google', 'facebook', 'help', 'hello', 'wtf', 'blah', 'fugazi', 'lethalcode']
     return render_template('allblogs.j2', title = 'Blogs', blogs = blogs, allTags = allTags)
+
+@app.route('/blog')           ## get single blog having given id
+def blog():
+    blog_id = request.args.get('blog_id') 
+    blog = {
+        'id': '3434', 'title' : 'Second Blog',
+        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
+        'shortlisting_content' : 'shortlisting rounds were easy aF',
+        'shortlisting_rounds' : [{'company_name' : 'google', 'content': 'Idk it was usual'}, {'company_name' : 'uber', 'content': 'Idk it was usual'}],
+        'interview_content' : 'yeah, the usual stuff but they ask a shitload of crap too',
+        'interview_rounds': [{'company_name' : 'facebook', 'content': 'Idk it was usual'}, {'company_name' : 'nutanix', 'content': 'Idk it was usual'}],
+        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
+        'author': 'thelethalcode'
+    }
+    if(blog_id == '3434'):
+        return render_template('blog.j2', title = blog['title'], blog = blog)
+    else : 
+        return 'Error'
 
 @app.route('/login')
 def login(): 

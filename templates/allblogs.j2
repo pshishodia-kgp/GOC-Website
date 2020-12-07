@@ -8,7 +8,7 @@
         <select id = "select-tags" onChange = "selectedTag()" class = "form-control"> 
             <option value = ''> Select Tags</option> 
             {% for tag in allTags %}
-            <option onclick = "{{'blogs/' + tag}}">{{tag}}</option> 
+            <option value ="{{tag}}">{{tag}}</option> 
             {% endfor %}
         </select> 
     </form>  
@@ -17,7 +17,7 @@
 <div class = "col-md-6"> 
     {% for blog in blogs %}
     <hr> 
-    <h2><a href = "{{'/blog/' + blog.id}}">{{ blog.title }}</a></h2> 
+    <h2><a href = "{{'/blog?blog_id=' + blog.id}}">{{ blog.title }}</a></h2> 
     <p>{{ blog.content }}</p> 
 
     <div> 
