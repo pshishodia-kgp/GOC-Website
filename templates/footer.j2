@@ -1,0 +1,34 @@
+<hr> 
+<footer class="site-footer" style = "background-color:; height: 250px;">
+    <div class = "container">
+    <div class = "row" style = "justify-content: space-between;"> 
+        <div class = "col-md-4" > 
+            <h2> Contact us </h2> 
+            <p> Email
+                <img src="{{ url_for('static', filename='envelope.svg') }}" alt="" width="25" height="25" title="Bootstrap">
+               : <a href= "mailto: goc.iitkgp@gmail.com">goc.iitkgp@gmail.com</a> 
+            </p> 
+            <p> Facebook:
+            <a href = "https://facebook.com/goc.iitkgp" target = "_blank">facebook.com/goc.iitkgp</a>
+            </p> 
+        </div> 
+        
+
+
+        <div class = "col-md-4" > 
+            {% set links = ['problems' , 'blogs', 'leaderboard', 'forum', 'alumnus', 'login', 'signup', 'home'] %}
+            <h2> Links </h2> 
+            <ul style = "list-style: none;"> 
+                <li> <a href = "/problems" target = "_blank">Problems</a> </li>
+                <li> <a href = "/blogs" target = "_blank">Blogs</a> </li>
+                <li> <a href = "/leaderboard" target = "_blank">Leaderboard</a> </li>
+                <li> <a href = "/forum" target = "_blank">Forum</a> </li>
+                <li> <a href = "/alumnus" target = "_blank">Alumnus</a> </li>
+                <li> <a href = "/login" target = "_blank">Login</a> </li>
+                <li> <a href = "/Signup" target = "_blank">Signup</a> </li>
+                <li> <a href = "/" target = "_blank">Home</a> </li>
+            </ul> 
+        </div>   
+    </div> 
+    </div> 
+</footer>
