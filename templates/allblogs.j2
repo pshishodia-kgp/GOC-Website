@@ -1,0 +1,55 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class="container">
+
+<div class = "col-md-4" style = "margin-top:20px"> 
+    <form> 
+        <select id = "select-tags" onChange = "selectedTag()" class = "form-control"> 
+            <option value = ''> Select Tags</option> 
+            {% for tag in allTags %}
+            <option onclick = "{{'blogs/' + tag}}">{{tag}}</option> 
+            {% endfor %}
+        </select> 
+    </form>  
+</div> 
+
+<div class = "col-md-6"> 
+    {% for blog in blogs %}
+    <hr> 
+    <h2><a href = "{{'/blog/' + blog.id}}">{{ blog.title }}</a></h2> 
+    <p>{{ blog.content }}</p> 
+
+    <div> 
+    <span class = "badge">{{ blog.published_at }} |
+        <a href = "{{ '/profile/' + blog.author}}">{{ blog.author }}</a> 
+    </span> 
+    <div class = "pull-right"> 
+        {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
+        {% for i in range(blog.tags|length) %}
+        <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ blog.tags[i] }}</span> 
+        {% endfor %}
+    </div> 
+    </div> 
+    <hr> 
+    {% endfor %}
+</div> 
+</div> 
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css">    
+
+<script>
+$(document).ready(function () {
+    $("select").select2();
+});
+
+function selectedTag(){
+    selected_tag = $('#select-tags').val();
+    if(selected_tag){
+        location.href = '/blogs?' + selected_tag; 
+    } 
+}
+</script> 
+{% endblock %}

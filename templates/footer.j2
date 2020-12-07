@@ -1,7 +1,8 @@
-<header class="site-header">
-  <nav class="navbar navbar-expand-lg fixed-bottom" style = "background-color:silver;">
+<hr> 
+<footer class="site-footer" style = "background-color:; height: 250px;">
     <div class = "container">
-        <div class = "col-md-4" style = "display: flex; flex-direction:column"> 
+    <div class = "row" style = "justify-content: space-between;"> 
+        <div class = "col-md-4" > 
             <h2> Contact us </h2> 
             <p> Email
                 <img src="{{ url_for('static', filename='envelope.svg') }}" alt="" width="25" height="25" title="Bootstrap">
@@ -14,7 +15,7 @@
         
 
 
-        <div class = "col-md-4" style = "display: flex; flex-direction:column"> 
+        <div class = "col-md-4" > 
             {% set links = ['problems' , 'blogs', 'leaderboard', 'forum', 'alumnus', 'login', 'signup', 'home'] %}
             <h2> Links </h2> 
             <ul style = "list-style: none;"> 
@@ -29,5 +30,5 @@
             </ul> 
         </div>   
     </div> 
-  </nav>
-</header>
+    </div> 
+</footer>
