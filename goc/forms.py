@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
-from goc.models import User
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from models import User
 
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(max=60)])
-    email = StringField('Gmail', validators=[DataRequired(), Email()], Length(max=120))
+    email = StringField('Gmail', validators=[DataRequired(), Email(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')

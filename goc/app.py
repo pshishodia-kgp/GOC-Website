@@ -1,10 +1,12 @@
 import os, json
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
+from forms import SignUpForm, LoginForm
 
 TEMPLATE_DIR = os.path.join("..", "templates")
 STATIC_DIR = os.path.join("..", "static")
 
 app = Flask(__name__, template_folder = TEMPLATE_DIR, static_folder = STATIC_DIR)
+app.config['SECRET_KEY'] = 'd035d622dc82b6465e417465da37a499'
 
 # Home Page
 @app.route('/')
@@ -48,13 +50,22 @@ def blog():
     else : 
         return 'Error'
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login(): 
-    pass
+    form = LoginForm()
+    if form.validate_on_submit():
+        return redirect(url_for('home'))
+    else:
+        flash('Login Failed. Please check username/email and password')
+    return render_template('login.j2', title='Login', form=form)
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup(): 
-    pass
+    form = SignUpForm()
+    if form.validate_on_submit():
+        return redirect(url_for('login'))
+    return render_template('register.j2', title='Register', form=form)
+
 
 if __name__ == '__main__':
     app.debug = True
