@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from models import User
+from goc.models import User
 
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(max=60)])
