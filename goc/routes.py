@@ -1,4 +1,4 @@
-import json
+import json, requests
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user
 from goc import app
@@ -46,18 +46,22 @@ def blog():
     else : 
         return 'Error'
 
+
+# login and sign up routes
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        #get the user from database
-        #login_user(user)
+        # get the user from database
+        # login_user(user)
         return redirect(url_for('home'))
     else:
         flash('Login Failed. Please check username/email and password', 'danger')
     return render_template('login.j2', title='Login', form=form)
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -65,10 +69,31 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
-        return redirect(url_for('login'))
+        return redirect(url_for('signup_verify'))
     return render_template('signup.j2', title='Sign Up', form=form)
+
+
+@app.route('/signup-verify', methods=['GET', 'POST'])
+def signup_verify():
+    if request.method == 'POST':
+        url = 'https://codeforces.com/api/user.info?handles=' + form.username.data
+        data = requests.get(url).json()
+        if(data['status'] == "FAILED"):
+            flash('Invalid Username. Please provide a valid codeforces username', 'danger')
+            return redirect(url_for('signup'))
+        elif(data['result'][0]['email'] != form.email.data):
+            flash('Invalid email. Please provide same email id as on codeforces', 'danger')
+            return redirect(url_for('signup'))
+        else:
+            # add the user to database
+            flash('Your account has been created. You are now able to login!', 'success')
+            return redirect(url_for('login'))
+    else:
+        return render_template('signup_verify.j2', title='Verify')
+
 
 @app.route('/logout')
 def logout():
     logout_user()
+    flash('You have been successfully logged out!', 'success')
     return redirect(url_for('home'))

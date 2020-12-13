@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from goc.models import User
 
 class SignUpForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(max=60)])
+    username = StringField('Username (Codeforces)', validators=[DataRequired(), Length(max=60)])
     email = StringField('Gmail', validators=[DataRequired(), Email(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
