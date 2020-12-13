@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField,IntegerField, FieldList,FormField
+from wtforms import StringField, SubmitField,IntegerField, FieldList,FormField
 from wtforms.fields.html5 import DateTimeLocalField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length
 
 class ShortlistingRound:
     company_name = StringField('Company Name',
