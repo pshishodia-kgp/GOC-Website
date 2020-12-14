@@ -1,3 +1,24 @@
 {% extends 'base.j2' %}
 {% block content %}
+    <div class="text-center">
+        <form action="", method="POST">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend>
+                    Sign Up!
+                </legend>
+                <div class="form-group">
+                    {{ form.username_or_email.label(class="form-control-label") }}
+                    {{ form.username_or_email(class="form-control-inline") }}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {{ form.password(class="form-control-inline") }}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
 {% endblock content %}

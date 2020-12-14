@@ -11,7 +11,7 @@ class Blog(db.Model):
     published_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     tags = db.relationship('Tag', backref='blog', lazy=True)
     rounds = db.relationship('Round', backref='blog', lazy=True)
-    author = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
 
     def __repr__(self):
         return self.title
@@ -19,7 +19,7 @@ class Blog(db.Model):
 
 class Tag(db.Model):
     name = db.Column(db.String(20), nullable=False, primary_key=True)
-    blog = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
 
     def __repr__(self):
         return self.name
@@ -43,7 +43,7 @@ class Round(db.Model):
     round_type = db.Column(db.Enum(RoundType), nullable=False)
     company_name = db.Column(db.String(20), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    blog = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
 
 
 
