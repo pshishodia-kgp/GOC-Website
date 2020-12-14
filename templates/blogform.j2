@@ -1,0 +1,31 @@
+{% extends 'base.j2' %}
+{% block content %}
+<div class="container">
+<div class = "col-md-12"> 
+<form action="" method="POST">
+    {{ blog_form.hidden_tag() }}    
+    <p>BlogId : {{ blog_form.id }}</p>
+    <p>Title: {{ blog_form.title }}</p>
+    <p>Content: {{ blog_form.content }}</p>
+    <p>Author: {{ blog_form.author }}</p>
+    {% for tag in blog_form.tags %}
+        <p>{{tag.label}} {{ tag }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addTag }}</p>  
+    <p>ShortListing Content: {{ blog_form.shortlisting_content }}</p>
+    {% for round in blog_form.shortlisting_rounds %}
+        <p>{{round.label}} {{ round }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addShortListing }}</p>
+    <p>Interview Content: {{ blog_form.interview_content }}</p>
+    {% for round in blog_form.interview_rounds %}
+        <p>{{round.label}} {{ round }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addInterview }}</p>      
+    <p>{{ blog_form.submit}}</p>
+
+</form>
+</div> 
+</div> 
+
+{% endblock content%}
