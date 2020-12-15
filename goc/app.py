@@ -91,9 +91,12 @@ def submitBlog():
     if(blog_form.validate_on_submit()):       
         #First make all tags unique
         tags = [str(x) for x in set(blog_form.tags)]   
-        author = Author(name = str(blog_form.author))                   
-        db.session.add(author)   
-        db.session.commit()      
+        author = Author(name = str(blog_form.author))  
+        try:
+            db.session.add(author) 
+            db.session.commit()
+        except:
+            return "Error in Adding Author"        
         author_id = author.id  
         blog_data = Blog(            
             title = str(blog_form.title.data),
@@ -101,17 +104,23 @@ def submitBlog():
             author = author_id,
             shortlisting_content = str(blog_form.shortlisting.shortlisting_content.data),
             interview_content = str(blog_form.interview.interview_content.data)
-        )                    
-        db.session.add(blog_data)    
-        db.session.commit()  
+        )      
+        try:
+            db.session.add(blog_data)  
+            db.session.commit()
+        except:
+            return "Error in adding Blog"            
         blog_id = blog_data.id        
         Tags = []        
         for ttag in tags:
             Tags.append(Tag(name = ttag,blog = blog_id))   
-        for ttag in Tags:            
-            db.session.add(ttag)                      
-            
-        db.session.commit()
+        for ttag in Tags: 
+            try:
+                db.session.add(ttag)
+                db.session.commit()
+            except:
+                return "Error in Adding Tag"              
+        
         for round in blog_form.shortlisting.shortlisting_rounds:
             current_round = Round(
                 round_type = RoundType.shortlisting,
@@ -119,7 +128,11 @@ def submitBlog():
                 content = str(round.content.data),
                 blog = int(blog_id)
             )
-            db.session.add(current_round)
+            try:
+                db.session.add(current_round)
+                db.session.commit()
+            except:
+                return "Error in Adding ShortListing Data"            
         for round in blog_form.interview.interview_rounds:
             current_round = Round(
                 round_type = RoundType.interview,
@@ -127,8 +140,15 @@ def submitBlog():
                 content = str(round.content.data),
                 blog = int(blog_id)
             )
-            db.session.add(current_round)            
-        db.session.commit()                       
+            try:
+                db.session.add(current_round)  
+                db.session.commit()          
+            except:
+                return "Error in Adding Interview Round Data"
+        try:
+            db.session.commit()                       
+        except:
+            return "Error in commiting changes"
         return 'Success'#Some front end editing can be done here
     print(blog_form.errors)    
     return render_template('blogform.j2',blog_form = blog_form,shortlisted = shortlisted)
