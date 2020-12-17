@@ -1,7 +1,19 @@
 {% extends 'base.j2' %}
 {% block content %}
+    <div> 
+        <span> Please make your email public by unchecking the box against Hide Contact Information.
+        <a href = "" target="popup" onclick="window.open('https://codeforces.com/settings/general/#needToHideContacts','name','width=800,height=600')">Open Cf Settings</a>
+        </span> 
+    </div> 
     <div class="text-center">
-        <form action="", method="POST">
+        <form id = "signup-form" action="", method="POST">
+            <div class = "form-errors"> 
+                {% for field in form.errors %}
+                    {% for error in form[field].errors %}
+                    <span class= "text-muted danger">{{ error }}</span> 
+                    {% endfor %}
+                {% endfor %}
+            </div> 
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend>
@@ -29,4 +41,5 @@
             </div>
         </form>
     </div>
+
 {% endblock content %}

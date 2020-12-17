@@ -69,27 +69,13 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
-        return redirect(url_for('signup_verify'))
-    return render_template('signup.j2', title='Sign Up', form=form)
+        return redirect(url_for('signup_verified'))
+    return render_template('signup.j2', title='Sign Up', form = form)
 
 
-@app.route('/signup-verify', methods=['GET', 'POST'])
-def signup_verify():
-    if request.method == 'POST':
-        url = 'https://codeforces.com/api/user.info?handles=' + form.username.data
-        data = requests.get(url).json()
-        if(data['status'] == "FAILED"):
-            flash('Invalid Username. Please provide a valid codeforces username', 'danger')
-            return redirect(url_for('signup'))
-        elif(data['result'][0]['email'] != form.email.data):
-            flash('Invalid email. Please provide same email id as on codeforces', 'danger')
-            return redirect(url_for('signup'))
-        else:
-            # add the user to database
-            flash('Your account has been created. You are now able to login!', 'success')
-            return redirect(url_for('login'))
-    else:
-        return render_template('signup_verify.j2', title='Verify')
+@app.route('/signup-verified', methods=['GET', 'POST'])
+def signup_verified():
+    return render_template('signup_verified.j2', title='Verify Signup')
 
 
 @app.route('/logout')
