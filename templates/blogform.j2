@@ -1,0 +1,37 @@
+{% extends 'base.j2' %}
+{% block content %}
+<div class="container">
+<div class = "col-md-12"> 
+<form action="" method="POST">
+    {{ blog_form.hidden_tag() }}    
+    {{ blog_form.interview.hidden_tag() }}    
+    {{ blog_form.shortlisting.hidden_tag() }}   
+    <p>Title: {{ blog_form.title }}</p>
+    <p>Content: {{ blog_form.content(class = "form-control") }}</p>
+    <p>Author: {{ blog_form.author }}</p>
+    {% for tag in blog_form.tags %}
+        <p>{{tag.label}} {{ tag }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addTag }}</p>  
+    <p>ShortListing Content:<br> {{ blog_form.shortlisting.shortlisting_content }}</p>
+    {% for round in blog_form.shortlisting.shortlisting_rounds %}
+        <p>{{round.label}} {{ round }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addShortListing }}</p>
+    {% if shortlisted %}
+        <p>Interview Content: {{ blog_form.interview.interview_content }}</p>
+        {% for round in blog_form.interview.interview_rounds %}
+            <p>{{round.label}} {{ round }}</p>
+        {% endfor %}
+        <p>{{ blog_form.addInterview }}</p> 
+    {% else %}
+        <p>{{ blog_form.isSelected }}</p>
+    {% endif %}   
+    
+    <p>{{ blog_form.submit(class="btn-lg btn-outline-info")}}</p>
+
+</form>
+</div> 
+</div> 
+
+{% endblock content%}
