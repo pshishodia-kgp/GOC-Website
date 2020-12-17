@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Blogs</title>
+{% endblock %}
+
+{% block body %}
+<a class='btn btn-success float-right' href="/blogs">Go to All posts </a>
+<h1>All Blogs</h1>
+<form class="form-inline my-2 my-lg-0" method="GET">
+    <br>
+    <div>
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" name="tags" id="tags">
+        <input style='display:inline' type='submit' value='Search'>
+    </div>
+</form>
+<br>
+<a class='btn btn-success float-right' href="/blogs/new">+Add new post </a>
+{% for post in posts.item %}
+<h1>Prelude: {{post.prelude}} </h1>
+<br>
+<h2>Shortlisting Round:</h2><br>
+<p> {{post.overview}}</p><br>
+{% for s in post.sl_company.item %}
+<a href="{{ url_for('blogs',tag=s.sl_company) }}">{{s.sl_company}}</a><br>
+<p>Details:{{s.details}}</p><br>
+{% for p in s.problems.item %}
+<p>Problem statement:{{p.problem_statement}}</p>
+<p>Sample test case:{{p.sample_test_case}}</p>
+<p>Explaination: {{p.explaination}}</p>
+<p>Expected solution:{{p.expected_solution}}</p>
+{% for t in p.tags %}
+<a href="{{ url_for('blogs',title=t.tag) }}">{{t.tag}}</a>
+{% endfor %}
+<a href='/blogs/addtag/{{post.id}}/{{s.id}}/{{p.id}}'>+add tag</a>
+{% endfor %}
+<a href='/blogs/addproblem/{{post.id}}/{{s.id}}'>+add problem</a>
+{% endfor %}
+<a href='/blogs/addcompany/{{post.id}}'>+add company</a>
+<hr>
+
+
+{% for i in post.intrv_company.item %}
+<h2>{{i.intrv_company}}:</h2>
+<p>{{i.detail}}</p>
+{% endfor %}
+<a href='/blogs/addintrv/{{post.id}}'>+add company</a>
+<p>{{post.conclusion}}</p>
+<hr>
+{% endfor %}
+<br>
+<br>
+<hr>
+
+
+{% for page_num in posts.iter_pages() %}
+{% if page_num %}
+<a class="btn btn-outline-info mb-4" href="{{url_for('blogs',page=page_num)}}">{{page_num}}</a>
+{% else %}
+{% endif %}
+{% endfor %}
+
+
+{% endblock %}

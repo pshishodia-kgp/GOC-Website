@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home</title>
+{% endblock %}
+
+{% block body %}
+<h1>Company:</h1>
+<form action="/blogs" method="POST">
+    Add Company:
+    <input class="form-control" name='sl_company' id='sl_company' type="text">
+    <br>
+    Detail:
+    <input class="form-control" name='details' id='details' type="text" placeholder="Add deatil"
+        aria-label="Add detail">
+    <br>
+    <h2>Problems:</h2>
+    Problem Statement:
+    <input class="form-control" name='problem_statement' id='problem_statement' type="text">
+    Sample Test Case:
+    <input class="form-control" name='sample_test_case' id='sample_test_case' type="text">
+    Explaination:
+    <input class="form-control" name='explaination' id='explaination' type="text">
+    Expected Solution:
+    <input class="form-control" name='expected_solution' id='expected_solution' type="text">
+
+
+
+    <input type='submit' value='Post'>
+</form>
+{% endblock %}
