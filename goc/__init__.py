@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_admin import Admin
 
 TEMPLATE_DIR = os.path.join(".", "templates")
 STATIC_DIR = os.path.join(".", "static")
@@ -15,5 +16,6 @@ login_manager.login_message_category = 'info'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+admin = Admin(app)
 
 from goc import routes

@@ -1,8 +1,8 @@
-from goc import db, login_manager
+from goc import db, login_manager, admin
+from flask_admin.contrib.sqla import ModelView
 from datetime import datetime
 from flask_login import UserMixin
 import enum
-
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,3 +59,9 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
+
+admin.add_view(ModelView(Blog, db.session))
+admin.add_view(ModelView(Tag, db.session))
+# admin.add_view(ModelView(RoundType, db.session))
+admin.add_view(ModelView(Round, db.session))
+admin.add_view(ModelView(User, db.session))
