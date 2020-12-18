@@ -7,33 +7,55 @@
     </div> 
     <div class="text-center">
         <form id = "signup-form" action="", method="POST">
-            <div class = "form-errors"> 
-                {% for field in form.errors %}
-                    {% for error in form[field].errors %}
-                    <span class= "text-muted danger">{{ error }}</span> 
-                    {% endfor %}
-                {% endfor %}
-            </div> 
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend>
                     Sign Up!
                 </legend>
                 <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+                    {{ form.name(class="form-control-inline") }}
+                    <div class = "form-errors"> 
+                        {% for error in form.name.errors %}
+                            <span class= "text-muted danger">{{ error }}</span> 
+                        {% endfor %}
+                    </div> 
+                </div>
+                <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {{ form.email(class="form-control-inline") }}
+                    <div class = "form-errors"> 
+                        {% for error in form.email.errors %}
+                            <span class= "text-muted danger">{{ error }}</span> 
+                        {% endfor %}
+                    </div> 
                 </div>
                 <div class="form-group">
                     {{ form.username.label(class="form-control-label") }}
                     {{ form.username(class="form-control-inline") }}
+                    <div class = "form-errors"> 
+                        {% for error in form.username.errors %}
+                            <span class= "text-muted danger">{{ error }}</span> 
+                        {% endfor %}
+                    </div> 
                 </div>
                 <div class="form-group">
                     {{ form.password.label(class="form-control-label") }}
                     {{ form.password(class="form-control-inline") }}
+                    <div class = "form-errors"> 
+                        {% for error in form.password.errors %}
+                            <span class= "text-muted danger">{{ error }}</span> 
+                        {% endfor %}
+                    </div> 
                 </div>
                 <div class="form-group">
                     {{ form.confirm_password.label(class="form-control-label") }}
                     {{ form.confirm_password(class="form-control-inline") }}
+                    <div class = "form-errors"> 
+                        {% for error in form.confirm_password.errors %}
+                            <span class= "text-muted danger">{{ error }}</span> 
+                        {% endfor %}
+                    </div> 
                 </div>
             </fieldset>
             <div class="form-group">

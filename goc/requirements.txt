@@ -3,3 +3,4 @@ email_validator
 flask_sqlalchemy
 flask_login
 requests
+flask_admin

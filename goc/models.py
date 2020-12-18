@@ -47,7 +47,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(60), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(40), nullable=False)
     blogs = db.relationship('Blog', backref='author', lazy=True)
 
     def __repr__(self):
