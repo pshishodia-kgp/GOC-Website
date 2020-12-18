@@ -1,10 +1,9 @@
-import os, json
-from flask import Flask, render_template, redirect, url_for, request
-
-TEMPLATE_DIR = os.path.join("..", "templates")
-STATIC_DIR = os.path.join("..", "static")
-
-app = Flask(__name__, template_folder = TEMPLATE_DIR, static_folder = STATIC_DIR)
+import json, requests
+from flask import render_template, redirect, url_for, request, flash
+from flask_login import login_user, current_user, logout_user
+from goc import app, db
+from goc.forms import SignUpForm, LoginForm
+from goc.models import User
 
 # Home Page
 @app.route('/')
@@ -48,14 +47,43 @@ def blog():
     else : 
         return 'Error'
 
-@app.route('/login')
-def login(): 
-    pass
 
-@app.route('/signup')
-def signup(): 
-    pass
+# login and sign up routes
 
-if __name__ == '__main__':
-    app.debug = True
-    app.run("0.0.0.0", port = 8000)
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.session.query(User).filter((User.username==form.username_or_email.data) | (User.email==form.username_or_email.data)).first()
+        login_user(user)
+        return redirect(url_for('home'))
+    else:
+        flash('Login Failed. Please check username/email and password', 'danger')
+    return render_template('login.j2', title='Login', form=form)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = SignUpForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, name=form.email.data, password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('signup_verified'))
+    return render_template('signup.j2', title='Sign Up', form = form)
+
+
+@app.route('/signup-verified', methods=['GET', 'POST'])
+def signup_verified():
+    return render_template('signup_verified.j2', title='Verify Signup')
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been successfully logged out!', 'success')
+    return redirect(url_for('home'))
