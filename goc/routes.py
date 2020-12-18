@@ -1,8 +1,9 @@
 import json, requests
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user
-from goc import app
+from goc import app, db
 from goc.forms import SignUpForm, LoginForm
+from goc.models import User
 
 # Home Page
 @app.route('/')
@@ -55,8 +56,8 @@ def login():
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
-        # get the user from database
-        # login_user(user)
+        user = db.session.query(User).filter((User.username==form.username_or_email.data) | (User.email==form.username_or_email.data)).first()
+        login_user(user)
         return redirect(url_for('home'))
     else:
         flash('Login Failed. Please check username/email and password', 'danger')
@@ -69,6 +70,9 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, name=form.email.data, password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
         return redirect(url_for('signup_verified'))
     return render_template('signup.j2', title='Sign Up', form = form)
 
