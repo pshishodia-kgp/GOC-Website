@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Add interview</title>
+{% endblock %}
+
+{% block body %}
+<h1>Interview round:</h1>
+<form action="/blogs" method="POST">
+    Company name:
+    <input class="form-control" name='intrv_company' id='intrv_company' type="text">
+    <br>
+    Detail:
+    <input class="form-control" name='detail' id='detail' type="text">
+    <br>
+
+    <input type='submit' value='Post'>
+</form>
+{% endblock %}

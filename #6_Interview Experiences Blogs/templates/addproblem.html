@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Add Problem</title>
+{% endblock %}
+
+{% block body %}
+<h1> Add problem </h1>
+<hr>
+<h2>Cteate New problem</h2>
+<form action="/blogs" method="POST">
+    Problem statement:
+    <input class="form-control" name='problem_statement' id='problem_statement' type="text"
+        placeholder="Problem statement" aria-label="Problem statement">
+    <br>
+    Sample test case:
+    <input class="form-control" name='sample_test_case' id='sample_test_case' type="text" placeholder="sample_test_case"
+        aria-label="s\">
+    <br>
+    Explaination:<input class="form-control" name='explaination' id='explaination' type="text"
+        placeholder="Explaination" aria-label="Explaination">
+    <br>
+    Expected solution:<input class="form-control" name='expected_solution' id='expected_solution' type="text"
+        placeholder="Expected solution" aria-label="Expected solution">
+    <br>
+
+
+    <input type='submit' value='Post'>
+</form>
+<hr>
+{% endblock %}

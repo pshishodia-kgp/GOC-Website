@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Add new post</title>
+{% endblock %}
+
+{% block body %}
+<h1>New post:</h1>
+<form action="/blogs" method="POST">
+    Add prelude:
+    <input class="form-control" name='prelude' id='prelude' type="text" placeholder="Add prelude"
+        aria-label="add prelude">
+    <br>
+    Shortlisting round overview:
+    <input class="form-control" name='overview' id='overview' type="text"><br>
+    Company name:
+    <input class="form-control" name='sl_company' id='sl_company' type="text">
+    Company detail:
+    <input class="form-control" name='details' id='details' type="text">
+    <h3>Problems:</h3>
+    Problem Statement:
+    <input class="form-control" name='problem_statement' id='problem_statement' type="text"
+        placeholder="Add problem statement" aria-label="add problem statement">
+    <br>
+    Sample Test Case:
+    <input class="form-control" name='sample_test_case' id='sample_test_case' type="text" placeholder="Sample test case"
+        aria-label="sample test case">
+    <br>
+    Explaination:
+    <input class="form-control" name='explaination' id='explaination' type="text" placeholder="Add explaination"
+        aria-label="add explaination">
+    <br>
+    Expected solution:
+    <input class="form-control" name='expected_solution' id='expected_solution' type="text"
+        placeholder="Expected solution" aria-label="Expected solution">
+    <br>
+    Add tag:
+    <input class="form-control" name='tag' id='tag' type="text" placeholder="Add tag" aria-label="Add tag">
+    <br>
+    <br>
+
+    Interview round:
+    Company:
+    <input class="form-control" name='intrv_company' id='intrv_company' type="text" placeholder="Add company name"
+        aria-label="add company name">
+    <br>
+    Detail:
+    <input class="form-control" name='detail' id='detail' type="text" placeholder="Add detail" aria-label="add detail">
+    <br>
+    <br>
+    Conclusion:
+    <input class="form-control" name='conclusion' id='conclusion' type="text" placeholder="Conclusion"
+        aria-label="Conclusion">
+    <br>
+    <input type='submit' value='Post'>
+</form>
+{% endblock %}

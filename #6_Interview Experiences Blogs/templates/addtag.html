@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Add Tag</title>
+{% endblock %}
+
+{% block body %}
+<h1> Add tag </h1>
+<hr>
+<h2>Cteate New problem</h2>
+<form action="/blogs" method="POST">
+    Add tag:
+    <input class="form-control" name='tag' id='tag' type="text" placeholder="Add tag" aria-label="Add tag">
+    <br>
+
+    <input type='submit' value='Post'>
+</form>
+<hr>
+{% endblock %}
