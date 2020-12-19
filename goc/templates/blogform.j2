@@ -8,7 +8,6 @@
     {{ blog_form.shortlisting.hidden_tag() }}   
     <p>Title: {{ blog_form.title }}</p>
     <p>Content: {{ blog_form.content(class = "form-control") }}</p>
-    <p>Author: {{ blog_form.author }}</p>
     {% for tag in blog_form.tags %}
         <p>{{tag.label}} {{ tag }}</p>
     {% endfor %}

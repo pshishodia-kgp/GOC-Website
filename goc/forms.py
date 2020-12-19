@@ -97,7 +97,6 @@ class BlogForm(FlaskForm):
     shortlisting = FormField(Shortlisting)
     interview = FormField(Interview)      
     tags = FieldList(StringField('Tag', validators=[DataRequired()]), min_entries=1)
-    author = StringField('Author', validators=[DataRequired(), Length(min=2)]) 
     addTag = SubmitField('Add Another Tag')   
     addShortListing = SubmitField('Add Company for shortlisting rounds')
     addInterview = SubmitField('Add Company for interview rounds')
