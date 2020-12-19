@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from goc import db
 from goc.models import User
-import requests
+import requests, re
 
 class SignUpForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(max=40)])
@@ -15,11 +15,12 @@ class SignUpForm(FlaskForm):
     user_data = {}
 
     def validate_username(self, username): 
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError('This username has already been taken')
-        elif "@" in str(username.data):
-            raise ValidationError('Username cannot contain @ character')
+        if re.search("[^a-zA-Z0-9_-]", str(username.data)):
+            raise ValidationError('Username should contain only Latin letters, digits, underscore or dash characters')
+        else:
+            user = User.query.filter_by(username=username.data).first()
+            if user:
+                raise ValidationError('This username has already been taken')
 
     def validate_email(self, email): 
         user = User.query.filter_by(email=email.data).first()
@@ -34,8 +35,6 @@ class SignUpForm(FlaskForm):
 
         url = 'https://codeforces.com/api/user.info?handles=' + str(self.username.data)
         data = requests.get(url).json()
-
-        print(data)
 
         if(data['status'] == "FAILED"):
             username_errors.append('Invalid Username. Please provide a valid codeforces username')
@@ -57,24 +56,20 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     submit = SubmitField('Log In')
 
-    def validate_username_or_email(self, username_or_email):
-        user = db.session.query(User).filter((User.username==username_or_email.data) | (User.email==username_or_email.data)).first()
-        if not user:
-            raise ValidationError('Could not find such user. Please check username/email')
-
     def validate(self):
-        if not FlaskForm.validate(self):
-            return False
-        
-        password_errors = []
+
+        username_or_email_errors, password_errors = [], []
 
         user = db.session.query(User).filter((User.username==self.username_or_email.data) | (User.email==self.username_or_email.data)).first()
 
         if user:
             if user.password != str(self.password.data):
                 password_errors.append('Invalid Password')
+        else:
+            username_or_email_errors.append('Please enter valid username/email')
         
-        if len(password_errors) > 0: 
+        if len(username_or_email_errors) > 0 or len(password_errors) > 0: 
+            self.username_or_email.errors = tuple(username_or_email_errors)
             self.password.errors = tuple(password_errors)
             return False
         return True
