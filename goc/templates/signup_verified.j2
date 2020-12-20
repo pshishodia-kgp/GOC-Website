@@ -1,0 +1,7 @@
+{% extends 'base.j2' %}
+{% block content %}
+<h4>You've been verified. Please
+<a href = "{{url_for('home')}}" target="popup" onclick=" window.open('https://codeforces.com/settings/general/#needToHideContacts','cf')">Open Cf Settings</a>
+ to hide your contact information again. 
+</h4>
+{% endblock content %}
