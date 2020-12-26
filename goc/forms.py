@@ -1,9 +1,15 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FieldList, FormField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.widgets import TextArea
 from goc import db
 from goc.models import User
 import requests, re
+<<<<<<< HEAD
+
+PASSWORD_REGEX = '[^a-zA-Z0-9._-]'
+=======
+>>>>>>> main
 
 class SignUpForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(max=40)])
@@ -15,7 +21,11 @@ class SignUpForm(FlaskForm):
     user_data = {}
 
     def validate_username(self, username): 
+<<<<<<< HEAD
+        if re.search(PASSWORD_REGEX, str(username.data)):
+=======
         if re.search("[^a-zA-Z0-9_-]", str(username.data)):
+>>>>>>> main
             raise ValidationError('Username should contain only Latin letters, digits, underscore or dash characters')
         else:
             user = User.query.filter_by(username=username.data).first()
@@ -55,9 +65,17 @@ class LoginForm(FlaskForm):
     username_or_email = StringField('Username/Email', validators=[DataRequired(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     submit = SubmitField('Log In')
+<<<<<<< HEAD
+    
+    def validate(self):
+        if not FlaskForm.validate(self): 
+            return False
+            
+=======
 
     def validate(self):
 
+>>>>>>> main
         username_or_email_errors, password_errors = [], []
 
         user = db.session.query(User).filter((User.username==self.username_or_email.data) | (User.email==self.username_or_email.data)).first()
@@ -73,3 +91,39 @@ class LoginForm(FlaskForm):
             self.password.errors = tuple(password_errors)
             return False
         return True
+
+class ShortlistingRound(FlaskForm):
+    company_name = StringField('Company Name', validators=[DataRequired()])
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    selected = BooleanField('Got Selected?', default = False)
+class InterviewRound(ShortlistingRound):
+    joining = BooleanField('Will be joining?', default=False)
+
+class Shortlisting(FlaskForm):
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    rounds = FieldList(FormField(ShortlistingRound))
+
+class Interview(FlaskForm): 
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    rounds = FieldList(FormField(InterviewRound))
+
+class BlogForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()]) 
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())    
+    shortlisting = FormField(Shortlisting)
+    interview = FormField(Interview)      
+    tags = FieldList(StringField('Tag', validators=[DataRequired()]))
+    addTag = SubmitField('Add Another Tag')   
+    addShortListing = SubmitField('Add Company')
+    addInterview = SubmitField('Add Company')
+    isSelected = SubmitField('Were You Shortlisted')
+    submit = SubmitField('Add Blog')
+
+    def validate_interview(self, interview): 
+        joining_companies = []
+        for round in interview.data.rounds: 
+            if round.joining.data == True: 
+                joining_companies.add(round.company_name.data) 
+        
+        if len(joining_companies) > 1: 
+            raise ValidationError('You can join atmost one among ' + ', '.join(joining_companies))

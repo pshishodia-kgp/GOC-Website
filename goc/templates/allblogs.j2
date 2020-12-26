@@ -15,6 +15,7 @@
 </div> 
 
 <div class = "col-md-6"> 
+    <a href = "/submitBlog" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create new blog</a>
     {% for blog in blogs %}
     <hr> 
     <h2><a href = "{{'/blog?blog_id=' + blog.id}}">{{ blog.title }}</a></h2> 

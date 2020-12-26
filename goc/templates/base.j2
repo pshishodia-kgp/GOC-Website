@@ -26,11 +26,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
    
     {% include 'navbar.j2' %}
-    <div class = "content" style = "min-height: calc(100vh - 350px)" >
+    <div class = "content" style = "min-height: calc(100vh - 100px)" >
     {% block content %} {% endblock %}
     </div> 
 
     {% include 'footer.j2' %}
 </body>
+
+<script> 
+{# This makes all text-areas auto-adjustable to input #}
+{# $('textarea').each(function () {
+  this.setAttribute('style', 'height:' + Math.max(60, Number(this.scrollHeight)) + 'px;overflow-y:hidden;');
+}).on('input', function () {
+  this.style.height = 'auto';
+  this.style.height = (this.scrollHeight) + 'px';
+}); #}
+
+</script> 
 
 </html>

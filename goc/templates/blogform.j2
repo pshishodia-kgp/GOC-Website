@@ -1,0 +1,115 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<form action="" method="POST"  class = "container">
+    {{ blog_form.hidden_tag() }}    
+    {{ blog_form.interview.hidden_tag() }}    
+    {{ blog_form.shortlisting.hidden_tag() }} 
+
+
+    <div class = "form-group"> 
+        {{ blog_form.title(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none", 
+        placeholder = "Title") }}
+    </div> 
+
+    <div class = "form-group"> 
+        {{ blog_form.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none", 
+        placeholder = "Overall Experience") }}
+    </div>
+
+    <div class = "form-group" style = "margin-bottom: 100px"> 
+        {{ blog_form.shortlisting.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+        , placeholder = "Shortlisting Round's Overall Experience") }}</p>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            {% for round in blog_form.shortlisting.rounds %}
+                <li class="nav-item">
+                    <a class="{{ 'nav-link ' + ('active' if loop.last else '')}}"
+                    id="{{ round.name + '-controller'}}"
+                        data-toggle="tab" href="{{'#' + round.name}}"
+                        role="tab"
+                        aria-controls="{{ round.name + '-controller'}}"
+                        aria-selected="true">
+                    {{ round.company_name(class = "form-control border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+                    , placeholder = "Company's Name") }}</a>
+                </li>
+            {% endfor %}
+
+            <li class = "nav-item"> <a class = "nav-link">
+                {{ blog_form.addShortListing(class= "nav-item-sm btn btn-success btn-sm")  }}
+            </a> </li> 
+        </ul> 
+
+        <div class="tab-content" id="myTabContent" style = "margin-top: 20px">
+            {% for round in blog_form.shortlisting.rounds %}
+                <div class="{{'tab-pane fade ' + ('show active' if loop.last else '') }}" 
+                id="{{round.name}}" role="tabpanel" aria-labelledby="contact-tab">
+
+                    {{ round.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+                    , placeholder = "Company's Shortlisting Round's Experience") }}
+
+                   <div class = "form-check">
+                        {{ round.selected(class = "form-check-input") }}
+                        {{ round.selected.label(class = "form-check-label")}}
+                    </div>  
+                </div> 
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Interview Round's Description #}
+
+    <div class = "form-group"> 
+        {{ blog_form.interview.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+        , placeholder = "interview Round's Overall Experience") }}</p>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            {% for round in blog_form.interview.rounds %}
+                <li class="nav-item">
+                    <a class="{{ 'nav-link ' + ('active' if loop.last else '')}}"
+                    id="{{ round.name + '-controller'}}"
+                        data-toggle="tab" href="{{'#' + round.name}}"
+                        role="tab"
+                        aria-controls="{{ round.name + '-controller'}}"
+                        aria-selected="true">
+                    {{ round.company_name(class = "form-control border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+                    , placeholder = "Company's Name") }}</a>
+                </li>
+            {% endfor %}
+
+            <li class = "nav-item"> <a class = "nav-link">
+                {{ blog_form.addInterview(class= "nav-item-sm btn btn-success btn-sm")  }}
+            </a> </li> 
+        </ul> 
+
+        <div class="tab-content" id="myTabContent">
+            {% for round in blog_form.interview.rounds %}
+                <div class="{{' row tab-pane fade ' + ('show active' if loop.last else '') }}" 
+                id="{{round.name}}" role="tabpanel" aria-labelledby="contact-tab">
+
+                    {{ round.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none"
+                    , placeholder = "Company's Interview Round's Experience") }}
+                    <div class = "form-check">
+                        {{ round.selected(class = "form-check-input") }}
+                        {{ round.selected.label(class = "form-check-label")}}
+                    </div>  
+                    
+                    <div class = "form-check">
+                        {{ round.joining(class = "form-check-input") }}
+                        {{ round.joining.label(class = "form-check-label")}}
+                    </div> 
+                </div> 
+            {% endfor %}
+        </div>
+    </div> 
+
+    {% for tag in blog_form.tags %}
+        <p>{{tag.label}} {{ tag }}</p>
+    {% endfor %}
+    <p>{{ blog_form.addTag(class= "btn btn-success btn-sm") }}</p> 
+
+    {{ blog_form.submit(class = "btn btn-primary") }}
+</form>
+
+
+{% endblock content%}

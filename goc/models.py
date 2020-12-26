@@ -9,6 +9,8 @@ class Blog(db.Model):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     published_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    shortlisting_content = db.Column(db.Text, nullable=False)
+    interview_content = db.Column(db.Text, nullable=True)
     tags = db.relationship('Tag', backref='blog', lazy=True)
     rounds = db.relationship('Round', backref='blog', lazy=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -18,11 +20,9 @@ class Blog(db.Model):
 
 
 class Tag(db.Model):
-    name = db.Column(db.String(20), nullable=False, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(20), nullable=False)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
-
-    def __repr__(self):
-        return self.name
 
 
 class RoundType(enum.Enum):
