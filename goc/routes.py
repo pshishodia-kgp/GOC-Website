@@ -35,10 +35,14 @@ def blog():
     blog = {
         'id': '3434', 'title' : 'Second Blog',
         'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'shortlisting_content' : 'shortlisting rounds were easy aF',
-        'shortlisting_rounds' : [{'company_name' : 'google', 'content': 'Idk it was usual'}, {'company_name' : 'uber', 'content': 'Idk it was usual'}],
-        'interview_content' : 'yeah, the usual stuff but they ask a shitload of crap too',
-        'interview_rounds': [{'company_name' : 'facebook', 'content': 'Idk it was usual'}, {'company_name' : 'nutanix', 'content': 'Idk it was usual'}],
+        'shortlisting' :
+        { 'content' : 'shortlisting rounds were easy aF',
+        'rounds' : [{'company_name' : 'google', 'content': 'Idk it was usual', 'selected' : True}, {'company_name' : 'uber', 'content': 'Idk it was usual', 'selected' : False}],
+        },
+        'interview' : {
+            'content' : 'yeah, the usual stuff but they ask a shitload of crap too',
+        'rounds': [{'company_name' : 'facebook', 'content': 'Idk it was usual', 'selected' : True, 'joining' : True}, {'company_name' : 'nutanix', 'content': 'Idk it was usual', 'selected' : True, 'joining' : False}]
+        },
         'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
         'author': 'thelethalcode'
     }
@@ -94,31 +98,19 @@ def logout():
 @app.route('/submitBlog',methods = ['POST','GET'])
 @login_required
 def submitBlog():    
-    shortlisted = 0
     blog_form  = BlogForm()
-
-    if(blog_form.isSelected.data):
-        shortlisted = 1
-        blog_form.interview.interview_rounds.append_entry()
-        return render_template('blogform.j2', blog_form=blog_form, shortlisted=1)
     
     if(blog_form.addInterview.data):
-        blog_form.interview.interview_rounds.append_entry()        
-        return render_template('blogform.j2', blog_form=blog_form, shortlisted=1)
+        blog_form.interview.rounds.append_entry()        
+        return render_template('blogform.j2', blog_form=blog_form)
     
     if(blog_form.addShortListing.data):
-        blog_form.shortlisting.shortlisting_rounds.append_entry()
-        if(len(blog_form.interview.interview_rounds)>0):
-            return render_template('blogform.j2', blog_form=blog_form, shortlisted=1)
-        else:
-            return render_template('blogform.j2', blog_form=blog_form, shortlisted=0)
+        blog_form.shortlisting.rounds.append_entry()
+        return render_template('blogform.j2', blog_form=blog_form)
     
     if(blog_form.addTag.data):
         blog_form.tags.append_entry()
-        if(len(blog_form.interview.interview_rounds)>0):
-            return render_template('blogform.j2', blog_form=blog_form, shortlisted=1)
-        else:
-            return render_template('blogform.j2', blog_form=blog_form, shortlisted=0)
+        return render_template('blogform.j2', blog_form=blog_form)
     
     if(blog_form.validate_on_submit()):       
         #First make all tags unique
@@ -130,8 +122,8 @@ def submitBlog():
             title = str(blog_form.title.data),
             content = str(blog_form.content.data),            
             author_id = author_id,
-            shortlisting_content = str(blog_form.shortlisting.shortlisting_content.data),
-            interview_content = str(blog_form.interview.interview_content.data)
+            shortlisting_content = str(blog_form.shortlisting.content.data),
+            interview_content = str(blog_form.interview.content.data)
         )
 
         try:
@@ -149,7 +141,7 @@ def submitBlog():
             except:
                 return "Error in Adding Tag"              
         
-        for round in blog_form.shortlisting.shortlisting_rounds:
+        for round in blog_form.shortlisting.rounds:
             current_round = Round(
                 round_type = RoundType.shortlisting,
                 company_name = str(round.company_name.data),
@@ -161,7 +153,7 @@ def submitBlog():
             except:
                 return "Error in Adding ShortListing Data"
         
-        for round in blog_form.interview.interview_rounds:
+        for round in blog_form.interview.rounds:
             current_round = Round(
                 round_type = RoundType.interview,
                 company_name = str(round.company_name.data),
@@ -180,4 +172,4 @@ def submitBlog():
 
         return 'Success'#Some front end editing can be done here
     print(blog_form.errors)    
-    return render_template('blogform.j2', blog_form=blog_form, shortlisted=shortlisted)
+    return render_template('blogform.j2', blog_form=blog_form)
