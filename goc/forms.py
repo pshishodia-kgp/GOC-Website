@@ -5,8 +5,11 @@ from wtforms.widgets import TextArea
 from goc import db
 from goc.models import User
 import requests, re
+<<<<<<< HEAD
 
 PASSWORD_REGEX = '[^a-zA-Z0-9._-]'
+=======
+>>>>>>> main
 
 class SignUpForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(max=40)])
@@ -18,7 +21,11 @@ class SignUpForm(FlaskForm):
     user_data = {}
 
     def validate_username(self, username): 
+<<<<<<< HEAD
         if re.search(PASSWORD_REGEX, str(username.data)):
+=======
+        if re.search("[^a-zA-Z0-9_-]", str(username.data)):
+>>>>>>> main
             raise ValidationError('Username should contain only Latin letters, digits, underscore or dash characters')
         else:
             user = User.query.filter_by(username=username.data).first()
@@ -58,11 +65,17 @@ class LoginForm(FlaskForm):
     username_or_email = StringField('Username/Email', validators=[DataRequired(), Length(max=120)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     submit = SubmitField('Log In')
+<<<<<<< HEAD
     
     def validate(self):
         if not FlaskForm.validate(self): 
             return False
             
+=======
+
+    def validate(self):
+
+>>>>>>> main
         username_or_email_errors, password_errors = [], []
 
         user = db.session.query(User).filter((User.username==self.username_or_email.data) | (User.email==self.username_or_email.data)).first()
