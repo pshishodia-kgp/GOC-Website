@@ -117,8 +117,8 @@ def blogs():
             all_posts=Blog.query.filter(Blog.tags.any(Tag.tag.like(title))).order_by(Blog.date_posted).paginate(page=page,per_page=5)
         elif tags:
             all_posts=Blog.query.filter(Blog.tags.any(Tag.tag.like(tags)) | 
-            Blog.sl_company.any(Sl_company.sl_company.like(tags)) |
             Blog.intrv_company.any(Intrv_company.intrv_company.like(tags)) |
+            Blog.sl_company.any(Sl_company.sl_company.like(tags)) |
             Blog.prelude.like(tags)).order_by(Blog.date_posted).paginate(page=page,per_page=5)
         else:
             all_posts=Blog.query.order_by(Blog.date_posted).paginate(page=page,per_page=5)
