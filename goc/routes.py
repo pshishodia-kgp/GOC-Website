@@ -14,17 +14,11 @@ def home():
 # Listing the blogs
 @app.route('/posts')
 def postList():
-    posts = Post.query.all()
-    posts.reverse()
-    postTags = []
-    
-    for post in posts:
-        if post.blogs:
-            for tag in post.blogs[0].tags:
-                postTags.append(tag.name)
-
-    allTags = [str(x) for x in set(postTags)]
-    return render_template('allblogs.j2', title = 'Posts', posts=posts, allTags=allTags, published_at='x days ago')
+    page = request.args.get('page', 1, int)
+    posts = Post.query.order_by(Post.published_date.desc()).paginate(per_page=2, page=page)
+    tags = Tag.query.group_by(Tag.name).all()
+    allTags = [tag.name for tag in tags]
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags, published_at='x days ago')
 
 @app.route('/post')           ## get single blog having given id
 def post():
@@ -196,5 +190,5 @@ def submitPost():
             
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
-            
+
         return render_template('postform.j2', post_form=post_form)
