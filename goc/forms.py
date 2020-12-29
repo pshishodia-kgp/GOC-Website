@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FieldList, FormField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from wtforms.widgets import TextArea
-from flask import flash
 from goc import db
 from goc.models import User
 import requests, re
@@ -83,6 +82,7 @@ class LoginForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()]) 
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    
     submit = SubmitField('Add Post')
 
 class ShortlistingRound(FlaskForm):
@@ -112,6 +112,9 @@ class BlogForm(PostForm):
     submit = SubmitField('Add Blog')
 
     def validate(self): 
+        if not FlaskForm.validate(self):
+            return False
+        
         joining_companies = []
         for round in self.interview.rounds: 
             if round.joining.data == True: 

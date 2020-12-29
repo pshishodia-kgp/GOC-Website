@@ -95,93 +95,114 @@ def logout():
 
 # blog submission route
 
-@app.route('/submitBlog',methods = ['POST','GET'])
+@app.route('/submitPost',methods = ['POST','GET'])
 @login_required
-def submitBlog():    
-    blog_form  = BlogForm()
-    
-    if(blog_form.addInterview.data):
-        blog_form.interview.rounds.append_entry()        
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.addShortListing.data):
-        blog_form.shortlisting.rounds.append_entry()
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.addTag.data):
-        blog_form.tags.append_entry()
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.validate_on_submit()):
-        #First make all tags unique
-        tags = [str(x) for x in set(blog_form.tags)]
+def submitPost():
 
-        author_id = current_user.id
+    isBlog = request.args.get('interview')
 
-        post_data = Post(
-            title = str(blog_form.title.data),
-            content = str(blog_form.content.data),
-            author_id = author_id
-        )
+    if isBlog:
+        blog_form = BlogForm()
 
-        try:
-            db.session.add(post_data)
-            db.session.commit()
-        except:
-            return "Error in adding Post"
-
-        post_id = post_data.id
-
-        blog_data = Blog(            
-            post_id = post_id,
-            shortlisting_content = str(blog_form.shortlisting.content.data),
-            interview_content = str(blog_form.interview.content.data)
-        )
-
-        try:
-            db.session.add(blog_data)
-            db.session.commit()
-        except:
-            return "Error in adding Blog"
+        if(blog_form.addInterview.data):
+            blog_form.interview.rounds.append_entry()        
+            return render_template('blogform.j2', post_form=blog_form)
         
-        blog_id = blog_data.id
-
-        for ttag in tags:
-            tag = Tag(name=ttag, blog_id=blog_id)
-            try:
-                db.session.add(tag)
-            except:
-                return "Error in Adding Tag"              
+        if(blog_form.addShortListing.data):
+            blog_form.shortlisting.rounds.append_entry()
+            return render_template('blogform.j2', post_form=blog_form)
         
-        for round in blog_form.shortlisting.rounds:
-            current_round = Round(
-                round_type = RoundType.shortlisting,
-                company_name = str(round.company_name.data),
-                content = str(round.content.data),
-                blog_id = blog_id
+        if(blog_form.addTag.data):
+            blog_form.tags.append_entry()
+            return render_template('blogform.j2', post_form=blog_form)
+        
+        if(blog_form.validate_on_submit()):
+            #First make all tags unique
+            tags = [str(x) for x in set(blog_form.tags)]
+
+            post_data = Post(
+                title = str(blog_form.title.data),
+                content = str(blog_form.content.data),
+                author_id = current_user.id
             )
-            try:
-                db.session.add(current_round)
-            except:
-                return "Error in Adding ShortListing Data"
-        
-        for round in blog_form.interview.rounds:
-            current_round = Round(
-                round_type = RoundType.interview,
-                company_name = str(round.company_name.data),
-                content = str(round.content.data),
-                blog_id = blog_id
-            )
-            try:
-                db.session.add(current_round)
-            except:
-                return "Error in Adding Interview Round Data"
-        
-        try:
-            db.session.commit()                       
-        except:
-            return "Error in commiting changes"
 
-        return 'Success'#Some front end editing can be done here
-    print(blog_form.errors)    
-    return render_template('blogform.j2', blog_form=blog_form)
+            try:
+                db.session.add(post_data)
+                db.session.commit()
+            except:
+                return "Error in adding Post"
+
+            post_id = post_data.id
+
+            blog_data = Blog(            
+                post_id = post_id,
+                shortlisting_content = str(blog_form.shortlisting.content.data),
+                interview_content = str(blog_form.interview.content.data)
+            )
+
+            try:
+                db.session.add(blog_data)
+                db.session.commit()
+            except:
+                return "Error in adding Blog"
+            
+            blog_id = blog_data.id
+
+            for ttag in tags:
+                tag = Tag(name=ttag, blog_id=blog_id)
+                try:
+                    db.session.add(tag)
+                except:
+                    return "Error in Adding Tag"              
+            
+            for round in blog_form.shortlisting.rounds:
+                current_round = Round(
+                    round_type = RoundType.shortlisting,
+                    company_name = str(round.company_name.data),
+                    content = str(round.content.data),
+                    blog_id = blog_id
+                )
+                try:
+                    db.session.add(current_round)
+                except:
+                    return "Error in Adding ShortListing Data"
+            
+            for round in blog_form.interview.rounds:
+                current_round = Round(
+                    round_type = RoundType.interview,
+                    company_name = str(round.company_name.data),
+                    content = str(round.content.data),
+                    blog_id = blog_id
+                )
+                try:
+                    db.session.add(current_round)
+                except:
+                    return "Error in Adding Interview Round Data"
+            
+            try:
+                db.session.commit()                       
+            except:
+                return "Error in commiting changes"
+
+            return 'Success'#Some front end editing can be done here
+        print(blog_form.errors)
+        return render_template('blogform.j2', post_form=blog_form)
+    else:
+        post_form = PostForm()
+        if post_form.validate_on_submit():
+
+            post_data = Post(
+                title = str(post_form.title.data),
+                content = str(post_form.content.data),
+                author_id = current_user.id
+            )
+
+            try:
+                db.session.add(post_data)
+                db.session.commit()
+            except:
+                return "Error in adding Post"
+            
+            return 'Success'
+        print(post_form.errors)
+        return render_template('postform.j2', post_form=post_form)
