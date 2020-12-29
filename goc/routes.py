@@ -2,8 +2,8 @@ import json, requests, random
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db
-from goc.forms import SignUpForm, LoginForm, BlogForm
-from goc.models import User, Blog, Tag, RoundType, Round
+from goc.forms import SignUpForm, LoginForm, PostForm, BlogForm
+from goc.models import User, Post, Blog, Tag, RoundType, Round
 
 
 # Home Page
@@ -112,16 +112,28 @@ def submitBlog():
         blog_form.tags.append_entry()
         return render_template('blogform.j2', blog_form=blog_form)
     
-    if(blog_form.validate_on_submit()):       
+    if(blog_form.validate_on_submit()):
         #First make all tags unique
         tags = [str(x) for x in set(blog_form.tags)]
 
         author_id = current_user.id
 
-        blog_data = Blog(            
+        post_data = Post(
             title = str(blog_form.title.data),
-            content = str(blog_form.content.data),            
-            author_id = author_id,
+            content = str(blog_form.content.data),
+            author_id = author_id
+        )
+
+        try:
+            db.session.add(post_data)
+            db.session.commit()
+        except:
+            return "Error in adding Post"
+
+        post_id = post_data.id
+
+        blog_data = Blog(            
+            post_id = post_id,
             shortlisting_content = str(blog_form.shortlisting.content.data),
             interview_content = str(blog_form.interview.content.data)
         )
