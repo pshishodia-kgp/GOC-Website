@@ -82,7 +82,6 @@ class LoginForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()]) 
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
-    
     submit = SubmitField('Add Post')
 
 class ShortlistingRound(FlaskForm):
@@ -108,7 +107,6 @@ class BlogForm(PostForm):
     addTag = SubmitField('Add Another Tag')   
     addShortListing = SubmitField('Add Company')
     addInterview = SubmitField('Add Company')
-    isSelected = SubmitField('Were You Shortlisted')
     submit = SubmitField('Add Blog')
 
     def validate(self): 
@@ -116,11 +114,13 @@ class BlogForm(PostForm):
             return False
         
         joining_companies = []
+        submit_errors = []
         for round in self.interview.rounds: 
             if round.joining.data == True: 
                 joining_companies.append(round.company_name.data) 
         
         if len(joining_companies) > 1: 
-            self.submit.errors = 'You can join atmost one among ' + ', '.join(joining_companies)
+            submit_errors.append('You can join atmost one among ' + ', '.join(joining_companies))
+            self.submit.errors = tuple(submit_errors)
             return False
         return True

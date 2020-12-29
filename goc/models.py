@@ -41,6 +41,7 @@ class Round(db.Model):
     company_name = db.Column(db.String(20), nullable=False)
     content = db.Column(db.Text, nullable=False)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
+    selected = db.Column(db.Boolean, default=0)
 
 
 

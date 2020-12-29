@@ -15,7 +15,9 @@
 
     {% block formcontent %}
     {% endblock %}
-
+    {% for error in post_form.submit.errors %}
+        <div class = "row"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
+    {% endfor %}
     {{ post_form.submit(class = "btn btn-primary") }}
 </form>
 

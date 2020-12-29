@@ -12,44 +12,33 @@ def home():
     return render_template('home.j2', title = '')
 
 # Listing the blogs
-@app.route('/blogs')
-def blogList():
-    # tags should always include all distinct company name (do it while inserting in database)
-    # Published at should store time gap
-    # Only need to send these columns.
-    blogs = [{'id': '3434', 'title' : 'First blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
-        'author': 'thelethalcode'},
-        {'id': '3434', 'title' : 'Second Blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe'],
-        'author': 'fugazi'}]
+@app.route('/posts')
+def postList():
+    posts = Post.query.all()
+    posts.reverse()
+    postTags = []
+    
+    for post in posts:
+        if post.blogs:
+            for tag in post.blogs[0].tags:
+                postTags.append(tag.name)
 
-    allTags = ['google', 'facebook', 'help', 'hello', 'wtf', 'blah', 'fugazi', 'lethalcode']
-    return render_template('allblogs.j2', title = 'Blogs', blogs = blogs, allTags = allTags)
+    allTags = [str(x) for x in set(postTags)]
+    return render_template('allblogs.j2', title = 'Posts', posts=posts, allTags=allTags, published_at='x days ago')
 
-@app.route('/blog')           ## get single blog having given id
-def blog():
-    blog_id = request.args.get('blog_id')
-    blog = {
-        'id': '3434', 'title' : 'Second Blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'shortlisting' :
-        { 'content' : 'shortlisting rounds were easy aF',
-        'rounds' : [{'company_name' : 'google', 'content': 'Idk it was usual', 'selected' : True}, {'company_name' : 'uber', 'content': 'Idk it was usual', 'selected' : False}],
-        },
-        'interview' : {
-            'content' : 'yeah, the usual stuff but they ask a shitload of crap too',
-        'rounds': [{'company_name' : 'facebook', 'content': 'Idk it was usual', 'selected' : True, 'joining' : True}, {'company_name' : 'nutanix', 'content': 'Idk it was usual', 'selected' : True, 'joining' : False}]
-        },
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
-        'author': 'thelethalcode'
-    }
-    if(blog_id == '3434'):
-        return render_template('blog.j2', title = blog['title'], blog = blog)
-    else :
-        return 'Error'
+@app.route('/post')           ## get single blog having given id
+def post():
+    post_id = request.args.get('post_id')
+    if not post_id:
+        return redirect(url_for('postList'))
+
+    post = Post.query.filter_by(id=int(post_id)).first()
+
+    if post:
+        return render_template('blog.j2', title=post.title, post=post, published_at='x days ago')
+    else:
+        flash('Post Not Found!', 'danger')
+        return redirect(url_for('postList'))
 
 
 # login and sign up routes
@@ -74,7 +63,7 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, name=form.email.data, password=form.password.data)
+        user = User(username=form.username.data, email=form.email.data, name=form.name.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('signup_verified'))
@@ -118,7 +107,7 @@ def submitPost():
         
         if(blog_form.validate_on_submit()):
             #First make all tags unique
-            tags = [str(x) for x in set(blog_form.tags)]
+            tags = [str(x) for x in set(blog_form.tags.data)]
 
             post_data = Post(
                 title = str(blog_form.title.data),
@@ -160,7 +149,8 @@ def submitPost():
                     round_type = RoundType.shortlisting,
                     company_name = str(round.company_name.data),
                     content = str(round.content.data),
-                    blog_id = blog_id
+                    blog_id = blog_id,
+                    selected = round.selected.data
                 )
                 try:
                     db.session.add(current_round)
@@ -184,8 +174,9 @@ def submitPost():
             except:
                 return "Error in commiting changes"
 
-            return 'Success'#Some front end editing can be done here
-        print(blog_form.errors)
+            flash('Post Added Successfully!', 'success')
+            return redirect(url_for('postList'))
+
         return render_template('blogform.j2', post_form=blog_form)
     else:
         post_form = PostForm()
@@ -203,6 +194,7 @@ def submitPost():
             except:
                 return "Error in adding Post"
             
-            return 'Success'
-        print(post_form.errors)
+            flash('Post Added Successfully!', 'success')
+            return redirect(url_for('postList'))
+            
         return render_template('postform.j2', post_form=post_form)
