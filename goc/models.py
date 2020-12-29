@@ -14,6 +14,7 @@ class Blog(db.Model):
     tags = db.relationship('Tag', backref='blog', lazy=True)
     rounds = db.relationship('Round', backref='blog', lazy=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comments = db.relationship('Comment', backref = 'blog', lazy = True)
 
     def __repr__(self):
         return self.title
@@ -49,12 +50,28 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(40), nullable=False)
     blogs = db.relationship('Blog', backref='author', lazy=True)
+    comments = db.relationship('Comment', backref = 'author', lazy = True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
+
+class Comment(db.Model): 
+    id = db.Column(db.Integer, primary_key = True)
+    content = db.Column(db.Text, nullable = False)
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable = False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    parent = db.relationship(lambda: Comment, remote_side = id, backref = 'children')
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    upvotes = db.Column(db.Integer, default = 0)
+    downvotes = db.Column(db.Integer, default = 0)
+    depth = db.Column(db.Integer, default = 0)
+
+    def __repr__(self): 
+        return f"Comment('{self.content}', by: {self.author.username})"
 
 admin.add_view(ModelView(Blog, db.session))
 admin.add_view(ModelView(Tag, db.session))
 # admin.add_view(ModelView(RoundType, db.session))
 admin.add_view(ModelView(Round, db.session))
 admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Comment, db.session))

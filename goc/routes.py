@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db
 from goc.forms import SignUpForm, LoginForm, BlogForm
-from goc.models import User, Blog, Tag, RoundType, Round
+from goc.models import *
 
 
 # Home Page
@@ -33,7 +33,7 @@ def blogList():
 def blog():
     blog_id = request.args.get('blog_id')
     blog = {
-        'id': '3434', 'title' : 'Second Blog',
+        'id': '12', 'title' : 'Second Blog',
         'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
         'shortlisting' :
         { 'content' : 'shortlisting rounds were easy aF',
@@ -46,8 +46,11 @@ def blog():
         'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
         'author': 'thelethalcode'
     }
-    if(blog_id == '3434'):
-        return render_template('blog.j2', title = blog['title'], blog = blog)
+    # fetch comments
+    comments = Comment.query.filter_by(blog_id = 12, parent = None).all()
+    # print(comments)
+    if(blog_id == '12'):
+        return render_template('blog.j2', title = blog['title'], blog = blog, comments = comments)
     else :
         return 'Error'
 
@@ -173,3 +176,27 @@ def submitBlog():
         return 'Success'#Some front end editing can be done here
     print(blog_form.errors)    
     return render_template('blogform.j2', blog_form=blog_form)
+
+@app.route('/add_comment', methods = ['GET', 'POST'])
+@login_required
+def addComment():
+    form = request.form
+    parent_id = int(form.get('parent_id'))
+    # Should actually check in database. Works in general until user tries to abuse the system
+    parent_id = parent_id if parent_id != -1 else None
+    
+    # Put checks here. 
+    comment = Comment(
+        content = form.get('content'),
+        blog_id = int(form.get('blog_id')),
+        parent_id = parent_id,
+        author_id = current_user.id,
+        depth = int(form.get('depth')),
+    )
+
+    try: 
+        db.session.add(comment)
+        db.session.commit()
+    except: 
+        return 'Error in adding comment'
+    return redirect(url_for('home'))
