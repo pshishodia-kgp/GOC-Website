@@ -37,12 +37,12 @@
 
 <script> 
 {# This makes all text-areas auto-adjustable to input #}
-{# $('textarea').each(function () {
+$('textarea').each(function () {
   this.setAttribute('style', 'height:' + Math.max(60, Number(this.scrollHeight)) + 'px;overflow-y:hidden;');
 }).on('input', function () {
   this.style.height = 'auto';
   this.style.height = (this.scrollHeight) + 'px';
-}); #}
+});
 
 </script> 
 

@@ -15,25 +15,42 @@
 </div> 
 
 <div class = "col-md-6"> 
-    <a href = "/submitBlog" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create new blog</a>
-    {% for blog in blogs %}
+    <a href = "/createPost?interview=True" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Add Interview Blog</a>
+    <a href = "/createPost?interview=False" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create Post</a>
+    {% for post in posts.items %}
     <hr> 
-    <h2><a href = "{{'/blog?blog_id=' + blog.id}}">{{ blog.title }}</a></h2> 
-    <p>{{ blog.content }}</p> 
+    <h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ post.title }}</a></h2> 
+    <p>{{ post.content }}</p> 
 
     <div> 
-    <span class = "badge">{{ blog.published_at }} |
-        <a href = "{{ '/profile/' + blog.author}}">{{ blog.author }}</a> 
+    <span class = "badge">{{ published_at }} |
+        <a href = "{{ '/profile/' + post.author.name}}">{{ post.author.username }}</a> 
     </span> 
     <div class = "pull-right"> 
         {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
-        {% for i in range(blog.tags|length) %}
-        <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ blog.tags[i] }}</span> 
-        {% endfor %}
+        {% if post.blogs %}
+            {% for i in range(post.blogs[0].tags|length) %}
+            <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.blogs[0].tags[i].name }}</span> 
+            {% endfor %}
+        {% endif %}
     </div> 
     </div> 
     <hr> 
     {% endfor %}
+
+    <nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% if posts.has_prev %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page) }}">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page) }}">{{ posts.prev().page }}</a></li>
+        {% endif%}
+        <li class="page-item active"><a class="page-link" href="{{ url_for('postList', page=posts.page) }}">{{ posts.page }}</a></li>
+        {% if posts.has_next %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page) }}">{{ posts.next().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page) }}">Next</a></li>
+        {% endif %}
+    </ul>
+    </nav>
 </div> 
 </div> 
 
