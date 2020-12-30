@@ -1,7 +1,7 @@
 import json, requests, random
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
-from goc import app, db
+from goc import app, db, USERNAME_REGEX_NOT
 from goc.forms import *
 from goc.models import *
 
@@ -14,10 +14,10 @@ def home():
 @app.route('/forum')
 def postList():
     page = request.args.get('page', 1, int)
-    posts = Post.query.order_by(Post.published_date.desc()).paginate(per_page=2, page=page)
+    posts = Post.query.order_by(Post.published_at.desc()).paginate(per_page=2, page=page)
     tags = Tag.query.group_by(Tag.name).all()
     allTags = [tag.name for tag in tags]
-    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags, published_at='x days ago')
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags)
 
 @app.route('/post')           ## get single blog having given id
 def post():
@@ -28,7 +28,7 @@ def post():
     post = Post.query.filter_by(id=int(post_id)).first()
 
     if post:
-        return render_template('blog.j2', title=post.title, post=post, published_at='x days ago')
+        return render_template('blog.j2', title=post.title, post=post)
     else:
         flash('Post Not Found!', 'danger')
         return redirect(url_for('postList'))
@@ -56,7 +56,10 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, name=form.name.data, password=form.password.data)
+        print(form.username.data)
+        user = User(username=form.username.data, email=form.email.data,
+            name=form.name.data, password=form.password.data,
+            profile_pic_url = form.profile_pic_url.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('signup_verified'))
@@ -219,3 +222,14 @@ def addComment():
     if form.get('post_id'): 
         return redirect('/post?post_id=' + form.get('post_id'))
     return redirect(url_form('home'))
+
+
+@app.route('/profile/<username>')
+def profile(username): 
+    if re.search(USERNAME_REGEX_NOT, username): 
+        return 'Invalid Username'
+    user = User.query.filter_by(username = str(username)).first()
+    if not user: 
+        return 'Invalid Username'
+    
+    return render_template('user_profile.j2', user = user)

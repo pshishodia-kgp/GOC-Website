@@ -1,0 +1,39 @@
+<div class = "d-flex p-3"> 
+    <div style = "text-align: center"> 
+        <img src="{{comment.author.profile_pic_url}}"
+        alt="{{ comment.author.username }}" class="flex-shrink-0  rounded-circle" 
+        style="width:60px;height:60px;">
+        
+        <div> <small> <a style ="color:red;" href = "{{ '/profile/' + comment.author.username}}">
+        {{ comment.author.username }}</a> </small></div>  
+    </div>  
+    
+
+    <div> 
+        <div> <i class = "material-icons">arrow_drop_up</i></div>      
+        <div> <i class = "material-icons" style = "color: blue;">arrow_drop_down</i> </div> 
+    </div> 
+    <div>
+        <small>3 mins ago
+        {% if not onBlog %}
+            | <a href = "{{ '/post?post_id=' + (comment.post.id | string) }}">
+            {{ comment.post.title }}</a> 
+        {% endif %}
+        </small>
+        <p>{{ comment.content }}</p>
+        {% if onBlog %}
+            <small> 
+                <a role = "button" data-toggle = "collapse"
+                    href = "{{ '#reply-' + (comment.id | string) }}" 
+                    aria-expanded = "true">Reply</a>
+            </small>  
+            <form action = '/add_comment' id = "{{ 'reply-' + (comment.id | string) }}" class= "collapse" method = "POST"> 
+                <textarea name = "content" class = "form-control"> </textarea>  
+                <input type = "hidden" name = "depth" value = "{{ comment.depth + 1 }}" />
+                <input type = "hidden" name = "parent_id" value = "{{ comment.id }}" />
+                <input type = "hidden" name = "post_id" value = "{{ comment.post.id }}" /> 
+                <button type = "submit" class = "mt-2 btn btn-primary btn-sm">Comment</button>
+            </form>
+        {% endif %}
+    </div>
+</div> 

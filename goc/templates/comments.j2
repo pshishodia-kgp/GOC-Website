@@ -15,45 +15,10 @@
 
     {% macro recurse (lst) %}
             {% for comment in lst %}
-                <div class = "d-flex p-3"> 
-                    {# <div class = "mt-3"> 
-                    <i class = "material-icons" role = "button"
-                        data-toggle = "collapse" 
-                        data-target = "{{ '#comment-' + (comment.id | string) }}"
-                        aria-controls = "{{ '#comment-' + (comment.id | string)}}"
-                        aria-expanded = "false">remove_circle</i> </div>  #}
-                    
-                    {# <div class = "d-flex" class = "collapse" id = "{{'comment-' + (comment.id|string) }}">  #}
-                        <div style = "text-align: center"> 
-                            <img src="https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_960_720.png" alt="John Doe" class="flex-shrink-0  rounded-circle" style="width:60px;height:60px;">
-                            <div> <small> <a style ="color:red;" href = "{{ '/profile/' + comment.author.username}}">
-                            {{ comment.author.username }}</a> </small></div>  
-                        </div>  
-                        
+                {% with onBlog = True %}
+                    {% include 'comment.j2' %}
+                {% endwith %} 
 
-                        <div> 
-                            <div> <i class = "material-icons">arrow_drop_up</i></div>      
-                            <div> <i class = "material-icons" style = "color: blue;">arrow_drop_down</i> </div> 
-                        </div> 
-                        <div>
-                            <small>3 mins ago</small>
-                            <p>{{ comment.content }}</p>
-                            <small> 
-                                <a role = "button" data-toggle = "collapse"
-                                    href = "{{ '#reply-' + (comment.id | string) }}" 
-                                    aria-expanded = "true">Reply</a>
-                            </small>  
-                            <form action = '/add_comment' id = "{{ 'reply-' + (comment.id | string) }}" class= "collapse" method = "POST"> 
-                                <textarea name = "content" class = "form-control"> </textarea>  
-                                <input type = "hidden" name = "depth" value = "{{ comment.depth + 1 }}" />
-                                <input type = "hidden" name = "parent_id" value = "{{ comment.id }}" />
-                                <input type = "hidden" name = "post_id" value = "{{ post.id }}" /> 
-                                <button type = "submit" class = "mt-2 btn btn-primary btn-sm">Comment</button>
-                            </form>
-                        </div>
-                    {# </div>  #}
-
-                </div> 
                 {% if comment.children | length > 0 %}
                     <div class = "ml-5"> 
                         {{ recurse(comment.children) }}

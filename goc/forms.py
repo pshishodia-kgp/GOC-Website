@@ -2,11 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FieldList, FormField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from wtforms.widgets import TextArea
-from goc import db
+from goc import db, USERNAME_REGEX_NOT
 from goc.models import User
 import requests, re
-
-PASSWORD_REGEX = '[^a-zA-Z0-9._-]'
 
 class SignUpForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(), Length(max=40)])
@@ -15,10 +13,10 @@ class SignUpForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=80)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
-    user_data = {}
+    profile_pic_url = StringField()
 
     def validate_username(self, username): 
-        if re.search(PASSWORD_REGEX, str(username.data)):
+        if re.search(USERNAME_REGEX_NOT, str(username.data)):
             raise ValidationError('Username should contain only Latin letters, digits, underscore or dash characters')
         else:
             user = User.query.filter_by(username=username.data).first()
@@ -30,7 +28,7 @@ class SignUpForm(FlaskForm):
         if user:
             raise ValidationError('This email has already been taken.')
 
-    def validate(self):
+    def validate_on_submit(self):
         if not FlaskForm.validate(self): 
             return False
 
@@ -52,6 +50,8 @@ class SignUpForm(FlaskForm):
             self.username.errors = tuple(username_errors)
             self.email.errors = tuple(email_errors)
             return False
+        
+        self.profile_pic_url.data = data['result'][0]['titlePhoto']
         return True
 
 class LoginForm(FlaskForm):
