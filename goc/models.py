@@ -4,16 +4,15 @@ from datetime import datetime
 from flask_login import UserMixin
 import enum
 
-class Association(db.Model):
-    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+Association = db.Table('association_table',
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     shortlisting_content = db.Column(db.Text, nullable=False)
     interview_content = db.Column(db.Text, nullable=True)
-    tags = db.relationship('Association', backref='blog')
     rounds = db.relationship('Round', backref='blog', lazy=True)
 
 
@@ -25,6 +24,7 @@ class Post(db.Model):
     published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     comments = db.relationship('Comment', backref = 'post', lazy = True)
+    tags = db.relationship('Tag', backref='post', secondary='association_table', lazy="dynamic")
 
     def __repr__(self):
         return self.title
@@ -33,7 +33,7 @@ class Post(db.Model):
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(20), nullable=False)
-    blogs = db.relationship('Association', backref='tag')
+    posts = db.relationship('Post', backref='tag', secondary='association_table', lazy="dynamic")
 
 
 class RoundType(enum.Enum):

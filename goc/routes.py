@@ -15,10 +15,12 @@ def home():
 def postList():
     tag_url = request.args.get('tag')
     page = request.args.get('page', 1, int)
-    posts = Post.query.order_by(Post.published_at.desc()).paginate(per_page=2, page=page)
+    if tag_url:
+        posts = Post.query.filter(Post.tags.any(name=tag_url)).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+    else:
+        posts = Post.query.order_by(Post.id.desc()).paginate(per_page=2, page=page)
     tags = Tag.query.group_by(Tag.name).all()
-    allTags = [tag.name for tag in tags]
-    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags)
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url)
 
 @app.route('/post')           ## get single blog having given id
 def post():
@@ -136,9 +138,8 @@ def submitPost():
 
             for ttag in tags:
                 tag = Tag(name=ttag)
-                assoc = Association(tag=tag, blog=blog_data)
-                blog_data.tags.append(assoc)
-                tag.blogs.append(assoc)
+                post_data.tags.append(tag)
+                tag.posts.append(post_data)
                 try:
                     db.session.add(tag)
                 except:
@@ -180,7 +181,13 @@ def submitPost():
         return render_template('blogform.j2', post_form=blog_form)
     elif isBlog == 'False':
         post_form = PostForm()
+
+        if(post_form.addTag.data):
+            post_form.tags.append_entry()
+            return render_template('postform.j2', post_form=post_form)
+        
         if post_form.validate_on_submit():
+            tags = [str(x) for x in set(post_form.tags.data)]
 
             post_data = Post(
                 title = str(post_form.title.data),
@@ -194,6 +201,20 @@ def submitPost():
             except:
                 return "Error in adding Post"
             
+            for ttag in tags:
+                tag = Tag(name=ttag)
+                post_data.tags.append(tag)
+                tag.posts.append(post_data)
+                try:
+                    db.session.add(tag)
+                except:
+                    return "Error in Adding Tag"
+            
+            try:
+                db.session.commit()                       
+            except:
+                return "Error in commiting changes"
+
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
