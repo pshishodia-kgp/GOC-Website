@@ -79,10 +79,16 @@ class LoginForm(FlaskForm):
             return False
         return True
 
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()]) 
+    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    submit = SubmitField('Add Post')
+
 class ShortlistingRound(FlaskForm):
     company_name = StringField('Company Name', validators=[DataRequired()])
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     selected = BooleanField('Got Selected?', default = False)
+
 class InterviewRound(ShortlistingRound):
     joining = BooleanField('Will be joining?', default=False)
 
@@ -94,23 +100,27 @@ class Interview(FlaskForm):
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
     rounds = FieldList(FormField(InterviewRound))
 
-class BlogForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired()]) 
-    content = StringField('Content', validators=[DataRequired()], widget=TextArea())    
+class BlogForm(PostForm):    
     shortlisting = FormField(Shortlisting)
     interview = FormField(Interview)      
     tags = FieldList(StringField('Tag', validators=[DataRequired()]))
     addTag = SubmitField('Add Another Tag')   
     addShortListing = SubmitField('Add Company')
     addInterview = SubmitField('Add Company')
-    isSelected = SubmitField('Were You Shortlisted')
     submit = SubmitField('Add Blog')
 
-    def validate_interview(self, interview): 
+    def validate(self): 
+        if not FlaskForm.validate(self):
+            return False
+        
         joining_companies = []
-        for round in interview.data.rounds: 
+        submit_errors = []
+        for round in self.interview.rounds: 
             if round.joining.data == True: 
-                joining_companies.add(round.company_name.data) 
+                joining_companies.append(round.company_name.data) 
         
         if len(joining_companies) > 1: 
-            raise ValidationError('You can join atmost one among ' + ', '.join(joining_companies))
+            submit_errors.append('You can join atmost one among ' + ', '.join(joining_companies))
+            self.submit.errors = tuple(submit_errors)
+            return False
+        return True

@@ -2,7 +2,7 @@ import json, requests, random
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db
-from goc.forms import SignUpForm, LoginForm, BlogForm
+from goc.forms import *
 from goc.models import *
 
 
@@ -11,48 +11,27 @@ from goc.models import *
 def home():
     return render_template('home.j2', title = '')
 
-# Listing the blogs
-@app.route('/blogs')
-def blogList():
-    # tags should always include all distinct company name (do it while inserting in database)
-    # Published at should store time gap
-    # Only need to send these columns.
-    blogs = [{'id': '3434', 'title' : 'First blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
-        'author': 'thelethalcode'},
-        {'id': '3434', 'title' : 'Second Blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe'],
-        'author': 'fugazi'}]
+@app.route('/forum')
+def postList():
+    page = request.args.get('page', 1, int)
+    posts = Post.query.order_by(Post.published_date.desc()).paginate(per_page=2, page=page)
+    tags = Tag.query.group_by(Tag.name).all()
+    allTags = [tag.name for tag in tags]
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags, published_at='x days ago')
 
-    allTags = ['google', 'facebook', 'help', 'hello', 'wtf', 'blah', 'fugazi', 'lethalcode']
-    return render_template('allblogs.j2', title = 'Blogs', blogs = blogs, allTags = allTags)
+@app.route('/post')           ## get single blog having given id
+def post():
+    post_id = request.args.get('post_id')
+    if not post_id:
+        return redirect(url_for('postList'))
 
-@app.route('/blog')           ## get single blog having given id
-def blog():
-    blog_id = request.args.get('blog_id')
-    blog = {
-        'id': '12', 'title' : 'Second Blog',
-        'content' :  'hello my name is blah blah blah, welcome to blah blah blah',
-        'shortlisting' :
-        { 'content' : 'shortlisting rounds were easy aF',
-        'rounds' : [{'company_name' : 'google', 'content': 'Idk it was usual', 'selected' : True}, {'company_name' : 'uber', 'content': 'Idk it was usual', 'selected' : False}],
-        },
-        'interview' : {
-            'content' : 'yeah, the usual stuff but they ask a shitload of crap too',
-        'rounds': [{'company_name' : 'facebook', 'content': 'Idk it was usual', 'selected' : True, 'joining' : True}, {'company_name' : 'nutanix', 'content': 'Idk it was usual', 'selected' : True, 'joining' : False}]
-        },
-        'published_at': '2 days ago', 'tags': ['google', 'facebook', 'help', 'hello', 'bye', 'hehe', 'wtf', 'last'],
-        'author': 'thelethalcode'
-    }
-    # fetch comments
-    comments = Comment.query.filter_by(blog_id = 12, parent = None).all()
-    # print(comments)
-    if(blog_id == '12'):
-        return render_template('blog.j2', title = blog['title'], blog = blog, comments = comments)
-    else :
-        return 'Error'
+    post = Post.query.filter_by(id=int(post_id)).first()
+
+    if post:
+        return render_template('blog.j2', title=post.title, post=post, published_at='x days ago')
+    else:
+        flash('Post Not Found!', 'danger')
+        return redirect(url_for('postList'))
 
 
 # login and sign up routes
@@ -77,7 +56,7 @@ def signup():
         return redirect(url_for('home'))
     form = SignUpForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, name=form.email.data, password=form.password.data)
+        user = User(username=form.username.data, email=form.email.data, name=form.name.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('signup_verified'))
@@ -98,105 +77,145 @@ def logout():
 
 # blog submission route
 
-@app.route('/submitBlog',methods = ['POST','GET'])
+@app.route('/createPost',methods = ['POST','GET'])
 @login_required
-def submitBlog():    
-    blog_form  = BlogForm()
-    
-    if(blog_form.addInterview.data):
-        blog_form.interview.rounds.append_entry()        
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.addShortListing.data):
-        blog_form.shortlisting.rounds.append_entry()
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.addTag.data):
-        blog_form.tags.append_entry()
-        return render_template('blogform.j2', blog_form=blog_form)
-    
-    if(blog_form.validate_on_submit()):       
-        #First make all tags unique
-        tags = [str(x) for x in set(blog_form.tags)]
+def submitPost():
 
-        author_id = current_user.id
+    isBlog = request.args.get('interview')
 
-        blog_data = Blog(            
-            title = str(blog_form.title.data),
-            content = str(blog_form.content.data),            
-            author_id = author_id,
-            shortlisting_content = str(blog_form.shortlisting.content.data),
-            interview_content = str(blog_form.interview.content.data)
-        )
+    if isBlog == 'True':
+        blog_form = BlogForm()
 
-        try:
-            db.session.add(blog_data)
-            db.session.commit()
-        except:
-            return "Error in adding Blog"
+        if(blog_form.addInterview.data):
+            blog_form.interview.rounds.append_entry()        
+            return render_template('blogform.j2', post_form=blog_form)
         
-        blog_id = blog_data.id
-
-        for ttag in tags:
-            tag = Tag(name=ttag, blog_id=blog_id)
-            try:
-                db.session.add(tag)
-            except:
-                return "Error in Adding Tag"              
+        if(blog_form.addShortListing.data):
+            blog_form.shortlisting.rounds.append_entry()
+            return render_template('blogform.j2', post_form=blog_form)
         
-        for round in blog_form.shortlisting.rounds:
-            current_round = Round(
-                round_type = RoundType.shortlisting,
-                company_name = str(round.company_name.data),
-                content = str(round.content.data),
-                blog_id = blog_id
+        if(blog_form.addTag.data):
+            blog_form.tags.append_entry()
+            return render_template('blogform.j2', post_form=blog_form)
+        
+        if(blog_form.validate_on_submit()):
+            #First make all tags unique
+            tags = [str(x) for x in set(blog_form.tags.data)]
+
+            post_data = Post(
+                title = str(blog_form.title.data),
+                content = str(blog_form.content.data),
+                author_id = current_user.id
             )
-            try:
-                db.session.add(current_round)
-            except:
-                return "Error in Adding ShortListing Data"
-        
-        for round in blog_form.interview.rounds:
-            current_round = Round(
-                round_type = RoundType.interview,
-                company_name = str(round.company_name.data),
-                content = str(round.content.data),
-                blog_id = blog_id
-            )
-            try:
-                db.session.add(current_round)
-            except:
-                return "Error in Adding Interview Round Data"
-        
-        try:
-            db.session.commit()                       
-        except:
-            return "Error in commiting changes"
 
-        return 'Success'#Some front end editing can be done here
-    print(blog_form.errors)    
-    return render_template('blogform.j2', blog_form=blog_form)
+            try:
+                db.session.add(post_data)
+                db.session.commit()
+            except:
+                return "Error in adding Post"
+
+            post_id = post_data.id
+
+            blog_data = Blog(            
+                post_id = post_id,
+                shortlisting_content = str(blog_form.shortlisting.content.data),
+                interview_content = str(blog_form.interview.content.data)
+            )
+
+            try:
+                db.session.add(blog_data)
+                db.session.commit()
+            except:
+                return "Error in adding Blog"
+            
+            blog_id = blog_data.id
+
+            for ttag in tags:
+                tag = Tag(name=ttag, blog_id=blog_id)
+                try:
+                    db.session.add(tag)
+                except:
+                    return "Error in Adding Tag"              
+            
+            for round in blog_form.shortlisting.rounds:
+                current_round = Round(
+                    round_type = RoundType.shortlisting,
+                    company_name = str(round.company_name.data),
+                    content = str(round.content.data),
+                    blog_id = blog_id,
+                    selected = round.selected.data
+                )
+                try:
+                    db.session.add(current_round)
+                except:
+                    return "Error in Adding ShortListing Data"
+            
+            for round in blog_form.interview.rounds:
+                current_round = Round(
+                    round_type = RoundType.interview,
+                    company_name = str(round.company_name.data),
+                    content = str(round.content.data),
+                    blog_id = blog_id
+                )
+                try:
+                    db.session.add(current_round)
+                except:
+                    return "Error in Adding Interview Round Data"
+            
+            try:
+                db.session.commit()                       
+            except:
+                return "Error in commiting changes"
+
+            flash('Post Added Successfully!', 'success')
+            return redirect(url_for('postList'))
+
+        return render_template('blogform.j2', post_form=blog_form)
+    elif isBlog == 'False':
+        post_form = PostForm()
+        if post_form.validate_on_submit():
+
+            post_data = Post(
+                title = str(post_form.title.data),
+                content = str(post_form.content.data),
+                author_id = current_user.id
+            )
+
+            try:
+                db.session.add(post_data)
+                db.session.commit()
+            except:
+                return "Error in adding Post"
+            
+            flash('Post Added Successfully!', 'success')
+            return redirect(url_for('postList'))
+
+        return render_template('postform.j2', post_form=post_form)
+    else: 
+        return redirect(url_for('home'))
 
 @app.route('/add_comment', methods = ['GET', 'POST'])
 @login_required
 def addComment():
-    form = request.form
-    parent_id = int(form.get('parent_id'))
-    # Should actually check in database. Works in general until user tries to abuse the system
-    parent_id = parent_id if parent_id != -1 else None
-    
-    # Put checks here. 
-    comment = Comment(
-        content = form.get('content'),
-        blog_id = int(form.get('blog_id')),
-        parent_id = parent_id,
-        author_id = current_user.id,
-        depth = int(form.get('depth')),
-    )
-
     try: 
+        form = request.form
+        parent_id = int(form.get('parent_id'))
+        # Should actually check in database. Works in general until user tries to abuse the system
+        parent_id = parent_id if parent_id != -1 else None
+        
+        # Put checks here. 
+        comment = Comment(
+            content = form.get('content'),
+            post_id = int(form.get('post_id')),
+            parent_id = parent_id,
+            author_id = current_user.id,
+            depth = int(form.get('depth')),
+        )
+
         db.session.add(comment)
         db.session.commit()
     except: 
         return 'Error in adding comment'
-    return redirect(url_for('home'))
+    if form.get('post_id'): 
+        return redirect('/post?post_id=' + form.get('post_id'))
+    return redirect(url_form('home'))

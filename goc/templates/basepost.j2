@@ -1,0 +1,24 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<form action="" method="POST" class="container">
+
+    {{ post_form.hidden_tag() }}    
+
+    {% block hiddentags %}
+    {% endblock %}
+    
+    <div class = "form-group"> 
+        {{ post_form.title(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none", 
+        placeholder = "Title") }}
+    </div> 
+
+    {% block formcontent %}
+    {% endblock %}
+    {% for error in post_form.submit.errors %}
+        <div class = "row"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
+    {% endfor %}
+    {{ post_form.submit(class = "btn btn-primary") }}
+</form>
+
+{% endblock %}
