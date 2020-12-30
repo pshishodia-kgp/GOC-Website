@@ -4,12 +4,16 @@ from datetime import datetime
 from flask_login import UserMixin
 import enum
 
+class Association(db.Model):
+    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     shortlisting_content = db.Column(db.Text, nullable=False)
     interview_content = db.Column(db.Text, nullable=True)
-    tags = db.relationship('Tag', backref='blog', lazy=True)
+    tags = db.relationship('Association', backref='blog')
     rounds = db.relationship('Round', backref='blog', lazy=True)
 
 
@@ -29,7 +33,7 @@ class Post(db.Model):
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(20), nullable=False)
-    blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
+    blogs = db.relationship('Association', backref='tag')
 
 
 class RoundType(enum.Enum):

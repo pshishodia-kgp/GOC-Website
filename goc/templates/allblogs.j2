@@ -6,9 +6,10 @@
 <div class = "col-md-4" style = "margin-top:20px"> 
     <form> 
         <select id = "select-tags" onChange = "selectedTag()" class = "form-control"> 
-            <option value = ''> Select Tags</option> 
+            <option value = ''> Select Tags</option>
+            <option value = "None">None</option> 
             {% for tag in allTags %}
-            <option value ="{{tag}}">{{tag}}</option> 
+            <option value = "{{tag.name}}">{{tag.name}}</option> 
             {% endfor %}
         </select> 
     </form>  
@@ -17,7 +18,7 @@
 <div class = "col-md-6"> 
     <a href = "/createPost?interview=True" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Add Interview Blog</a>
     <a href = "/createPost?interview=False" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create Post</a>
-    {% for post in posts.items %}
+    {% for post in posts %}
     <hr> 
     <h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ post.title }}</a></h2> 
     <p>{{ post.content }}</p> 
@@ -29,8 +30,8 @@
     <div class = "pull-right"> 
         {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
         {% if post.blogs %}
-            {% for i in range(post.blogs[0].tags|length) %}
-            <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.blogs[0].tags[i].name }}</span> 
+            {% for i in range(post.blogs.tags|length) %}
+            <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.blogs.tags[i].name }}</span> 
             {% endfor %}
         {% endif %}
     </div> 
@@ -66,7 +67,12 @@ $(document).ready(function () {
 function selectedTag(){
     selected_tag = $('#select-tags').val();
     if(selected_tag){
-        location.href = '/blogs?' + selected_tag; 
+        if(selected_tag == "None"){
+            location.href = '/forum'
+        }
+        else{
+            location.href = '/forum?tag=' + selected_tag;
+        }
     } 
 }
 </script> 

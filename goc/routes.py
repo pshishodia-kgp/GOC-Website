@@ -13,11 +13,14 @@ def home():
 
 @app.route('/forum')
 def postList():
+    tag_url = request.args.get('tag')
     page = request.args.get('page', 1, int)
-    posts = Post.query.order_by(Post.published_date.desc()).paginate(per_page=2, page=page)
+    per_page = 2
+    if tag_url:
+        posts = Post.query.filter_by(blog!=None, )
+    posts = Post.query.order_by(Post.published_date.desc()).paginate(per_page=per_page, page=page)
     tags = Tag.query.group_by(Tag.name).all()
-    allTags = [tag.name for tag in tags]
-    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=allTags, published_at='x days ago')
+    return render_template('allblogs.j2', title='Posts', posts=posts.items, allTags=tags, published_at='x days ago')
 
 @app.route('/post')           ## get single blog having given id
 def post():
@@ -131,7 +134,10 @@ def submitPost():
             blog_id = blog_data.id
 
             for ttag in tags:
-                tag = Tag(name=ttag, blog_id=blog_id)
+                tag = Tag(name=ttag)
+                assoc = Association(tag=tag, blog=blog_data)
+                blog_data.tags.append(assoc)
+                tag.blogs.append(assoc)
                 try:
                     db.session.add(tag)
                 except:
