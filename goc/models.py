@@ -22,7 +22,7 @@ class Post(db.Model):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     blog = db.relationship('Blog', uselist = False, backref="post", lazy=True)
-    published_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     comments = db.relationship('Comment', backref = 'post', lazy = True)
 
@@ -59,6 +59,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(60), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    profile_pic_url = db.Column(db.String(255))
     name = db.Column(db.String(40), nullable=False)
     comments = db.relationship('Comment', backref = 'author', lazy = True)
     posts = db.relationship('Post', backref='author', lazy=True)
@@ -76,6 +77,7 @@ class Comment(db.Model):
     upvotes = db.Column(db.Integer, default = 0)
     downvotes = db.Column(db.Integer, default = 0)
     depth = db.Column(db.Integer, default = 0)
+    published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
 
     def __repr__(self): 
         return f"Comment('{self.content}', by: {self.author.username})"

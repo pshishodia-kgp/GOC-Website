@@ -18,25 +18,8 @@
 <div class = "col-md-6"> 
     <a href = "/createPost?interview=True" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Add Interview Blog</a>
     <a href = "/createPost?interview=False" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create Post</a>
-    {% for post in posts %}
-    <hr> 
-    <h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ post.title }}</a></h2> 
-    <p>{{ post.content }}</p> 
-
-    <div> 
-    <span class = "badge">{{ published_at }} |
-        <a href = "{{ '/profile/' + post.author.name}}">{{ post.author.username }}</a> 
-    </span> 
-    <div class = "pull-right"> 
-        {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
-        {% if post.blogs %}
-            {% for i in range(post.blogs.tags|length) %}
-            <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.blogs.tags[i].name }}</span> 
-            {% endfor %}
-        {% endif %}
-    </div> 
-    </div> 
-    <hr> 
+    {% for post in posts.items %}
+        {% include 'shortBlog.j2' %}
     {% endfor %}
 
     <nav aria-label="Page navigation example">

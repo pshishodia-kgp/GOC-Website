@@ -6,7 +6,7 @@
     <hr> 
     <h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ post.title }}</a></h2> 
     <span >{{ published_at }} |
-        <a href = "{{ '/profile/' + post.author.name}}">{{ post.author.username }}</a> 
+        <a href = "{{ '/profile/' + post.author.username}}">{{ post.author.username }}</a> 
     </span> 
     <hr> 
     <p>{{ post.content }}</p> 
