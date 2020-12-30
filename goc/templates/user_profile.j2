@@ -1,0 +1,49 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class = "container"> 
+    <div class = "row flex-row-reverse rectangular-box"> 
+        <div class = "d-flex 
+        justify-content-md-end justify-content-sm-end
+        col-md-6 col-sm-12 col-xs-12">
+            <img src="https://userpic.codeforces.com/660745/title/1c9bf68721a715f4.jpg"
+                alt="{{ current_user.username }}" class="flex-shrink-0  rounded-circle img-fluid" style = "height: 250px">
+        </div> 
+
+        <div class = "justify-content-start col-md-6 col-sm-12 col-xs-12 info"> 
+            <h2>{{ user.username }}</h2> 
+            <p>{{ user.name }}</h2> 
+            <p class = "mt-n2">{{ user.email }}</p> 
+        </div> 
+
+    </div>
+    <ul class="d-flex justify-content-center nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="posts-tab" data-toggle="pill" role="tab"
+            href="#user-posts" aria-controls="user-posts" aria-selected="false"
+            style = "width: 120px; text-align: center">Posts</a>
+        </li>
+
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="comments-tab" data-toggle="pill" role="tab" 
+            href="#user-comments" aria-controls="user-comments" aria-selected="false"
+            style = "width: 120px; text-align: center; ">Comments</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" role="tabpanel" 
+            id="user-posts" aria-labelledby="posts-tab">
+            {% for post in user.posts %}
+                {% include 'shortBlog.j2' %}
+            {% endfor %}    
+        </div>
+        <div class="tab-pane fade" role="tabpanel" 
+            id="user-comments" aria-labelledby="pills-profile-tab">
+            {% for comment in user.comments %}
+                {% include 'comment.j2' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
