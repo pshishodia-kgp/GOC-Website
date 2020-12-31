@@ -20,7 +20,7 @@
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
             {% for round in post.blog.rounds %}
-                {% if round.round_type == 'shortlisting' %}
+                {% if round.round_type.value == 'shortlisting' %}
                     <li class="nav-item">
                         <a class="{{ 'nav-link ' + ('active' if loop.first else '')}}"
                         id="{{ round.company_name + '-shortlisting-controller'}}"
@@ -37,7 +37,7 @@
 
             <div class="tab-content" id="myTabContent" style = "margin-top: 20px">
                 {% for round in post.blog.rounds %}
-                    {% if round.round_type == 'shortlisting' %}
+                    {% if round.round_type.value == 'shortlisting' %}
                         <div class="{{'tab-pane fade ' + ('show active' if loop.first else '') }}" 
                         id="{{round.company_name + '-shortlisting-content'}}" role="tabpanel" aria-labelledby="contact-tab">
 
@@ -58,7 +58,7 @@
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
             {% for round in post.blog.rounds %}
-                {% if round.round_type == 'interview' %}
+                {% if round.round_type.value == 'interview' %}
                     <li class="nav-item">
                         <a class="{{ 'nav-link ' + ('active' if loop.first else '')}}"
                         id="{{ round.company_name + '-interview-controller'}}"
@@ -75,7 +75,7 @@
 
             <div class="tab-content" id="myTabContent" style = "margin-top: 20px">
                 {% for round in post.blog.rounds %}
-                    {% if round.round_type == 'interview' %}
+                    {% if round.round_type.value == 'interview' %}
                         <div class="{{'tab-pane fade ' + ('show active' if loop.first else '') }}" 
                         id="{{round.company_name + '-interview-content'}}" role="tabpanel" aria-labelledby="contact-tab">
 
@@ -88,16 +88,15 @@
                 {% endfor %}
             </div>
         </div> 
-
-        <div class = "pull-right"> 
-            {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
-            {% for i in range(post.blog.tags|length) %}
-            <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.blog.tags[i].name }}</span> 
-            {% endfor %}
-        </div> 
-        </div> 
     {% endif %}
-
+    
+    <div class = "pull-right"> 
+        {% set themes = ['primary', 'secondary', 'success', 'info', 'warning', 'danger'] %}
+        {% for i in range(post.tags.all()|length) %}
+        <span class = "{{ 'badge badge-' + themes[i % 6] }}">{{ post.tags.all()[i].name }}</span> 
+        {% endfor %}
+    </div> 
+    </div> 
     <hr>
 
     {% include 'comments.j2'%}

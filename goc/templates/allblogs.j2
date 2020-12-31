@@ -6,9 +6,10 @@
 <div class = "col-md-4" style = "margin-top:20px"> 
     <form> 
         <select id = "select-tags" onChange = "selectedTag()" class = "form-control"> 
-            <option value = ''> Select Tags</option> 
+            <option value = ''> Select Tags</option>
+            <option value = "None">None</option> 
             {% for tag in allTags %}
-            <option value ="{{tag}}">{{tag}}</option> 
+            <option value = "{{tag.name}}">{{tag.name}}</option> 
             {% endfor %}
         </select> 
     </form>  
@@ -24,13 +25,13 @@
     <nav aria-label="Page navigation example">
     <ul class="pagination">
         {% if posts.has_prev %}
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page) }}">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page) }}">{{ posts.prev().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url) }}">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url) }}">{{ posts.prev().page }}</a></li>
         {% endif%}
-        <li class="page-item active"><a class="page-link" href="{{ url_for('postList', page=posts.page) }}">{{ posts.page }}</a></li>
+        <li class="page-item active"><a class="page-link" href="{{ url_for('postList', page=posts.page, tag=tag_url) }}">{{ posts.page }}</a></li>
         {% if posts.has_next %}
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page) }}">{{ posts.next().page }}</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page) }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url) }}">{{ posts.next().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url) }}">Next</a></li>
         {% endif %}
     </ul>
     </nav>
@@ -49,7 +50,12 @@ $(document).ready(function () {
 function selectedTag(){
     selected_tag = $('#select-tags').val();
     if(selected_tag){
-        location.href = '/blogs?' + selected_tag; 
+        if(selected_tag == "None"){
+            location.href = '/forum'
+        }
+        else{
+            location.href = '/forum?tag=' + selected_tag;
+        }
     } 
 }
 </script> 
