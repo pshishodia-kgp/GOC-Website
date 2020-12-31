@@ -14,7 +14,7 @@
         <div> <i class = "material-icons" style = "color: blue;">arrow_drop_down</i> </div> 
     </div> 
     <div>
-        <small>3 mins ago
+        <small>{{ timeago(comment.published_at, datetime) }}
         {% if not onBlog %}
             | <a href = "{{ '/post?post_id=' + (comment.post.id | string) }}">
             {{ comment.post.title }}</a> 
