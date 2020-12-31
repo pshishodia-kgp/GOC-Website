@@ -1,4 +1,4 @@
-from goc import db, login_manager, admin
+from goc import db, login_manager, admin, STATIC_DIR
 from flask_admin.contrib.sqla import ModelView
 from datetime import datetime
 from flask_login import UserMixin
@@ -59,7 +59,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(60), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    profile_pic_url = db.Column(db.String(255))
+    profile_pic_url = db.Column(db.String(255), default = '//userpic.codeforces.com/no-title.jpg')
     name = db.Column(db.String(40), nullable=False)
     comments = db.relationship('Comment', backref = 'author', lazy = True)
     posts = db.relationship('Post', backref='author', lazy=True)

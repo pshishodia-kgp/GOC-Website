@@ -1,26 +1,27 @@
 {% extends 'base.j2' %}
 {% block content %}
-<div> 
+<div class = "d-flex justify-content-center"> 
     <span> Please make your email public by unchecking the box against Hide Contact Information.
     <a href = "" target="popup" onclick="window.open('https://codeforces.com/settings/general/#needToHideContacts','name','width=800,height=600')">Open Cf Settings</a>
     </span> 
 </div> 
 
+<div class = "container d-flex justify-content-center"> 
+<form id = "signup-form" action="", method="POST" class = "col-md-6 col-12 rounded-box d-flex-col">
+<div class = "px-2"> 
 
-<form id = "signup-form" action="", method="POST" class = "container"
-style = "margin: 10px">
     {{ form.hidden_tag() }}
     <div class="form-group row"> <legend>Sign Up!</legend> </div> 
 
     <div class="form-group">
         <div class = "row">
-            {{ form.name.label(class="col-sm-3 col-md-2 col-5 col-form-label") }}
-            {{ form.name(class="form-control col-sm-4 col-7") }}
+            {{ form.name.label(class="col-5 col-form-label") }}
+            {{ form.name(class="form-control col-7") }}
         </div>
 
         <div class = "form-errors"> 
             {% for error in form.name.errors %}
-                <div class = "row"> <span class= "text-danger offset-sm-3 offset-md-2 offset-5"> <small>{{ error }}</small></span> </div> 
+                <div class = "row"> <span class= "text-danger offset-5"> <small>{{ error }}</small></span> </div> 
             {% endfor %}
         </div> 
     </div>
@@ -28,13 +29,13 @@ style = "margin: 10px">
 
     <div class="form-group">
         <div class = "row"> 
-            {{ form.email.label(class="col-sm-3 col-md-2 col-5 col-form-label") }}
-            {{ form.email(class="form-control col-sm-4 col-7")}}
+            {{ form.email.label(class="col-5 col-form-label") }}
+            {{ form.email(class="form-control col-7")}}
         </div> 
     
         <div class = "form-errors"> 
             {% for error in form.email.errors %}
-                <div class = "row"> <span class= "text-danger offset-sm-3 offset-md-2 offset-5"> <small>{{ error }}</small></span> </div> 
+                <div class = "row"> <span class= "text-danger offset-5"> <small>{{ error }}</small></span> </div> 
             {% endfor %}
         </div> 
     </div>
@@ -42,13 +43,13 @@ style = "margin: 10px">
 
     <div class="form-group">
         <div class= "row">
-            {{ form.username.label(class="col-sm-3 col-md-2 col-5 col-form-label") }}
-            {{ form.username(class="form-control col-sm-4 col-7")}}
+            {{ form.username.label(class="col-5 col-form-label") }}
+            {{ form.username(class="form-control col-7")}}
         </div>
 
         <div class = "form-errors"> 
             {% for error in form.username.errors %}
-                <div class = "row"> <span class= "text-danger offset-sm-3 offset-md-2 offset-5"> <small>{{ error }}</small></span> </div> 
+                <div class = "row"> <span class= "text-danger offset-5"> <small>{{ error }}</small></span> </div> 
             {% endfor %}
         </div> 
     </div>
@@ -56,13 +57,13 @@ style = "margin: 10px">
 
     <div class="form-group">
         <div class = "row">
-            {{ form.password.label(class="col-sm-3 col-md-2 col-5 col-form-label") }}
-            {{ form.password(class="form-control col-sm-4 col-7")}}
+            {{ form.password.label(class="col-5 col-form-label") }}
+            {{ form.password(class="form-control col-7")}}
         </div>
 
         <div class = "form-errors"> 
             {% for error in form.password.errors %}
-                <div class = "row"> <span class= "text-danger offset-sm-3 offset-md-2 offset-5"> <small>{{ error }}</small></span> </div> 
+                <div class = "row"> <span class= "text-danger offset-5"> <small>{{ error }}</small></span> </div> 
             {% endfor %}
         </div> 
     </div>
@@ -70,21 +71,23 @@ style = "margin: 10px">
 
     <div class="form-group">
         <div class = "row">
-            {{ form.confirm_password.label(class="col-sm-3 col-md-2 col-5 col-form-label") }}
-            {{ form.confirm_password(class="form-control col-sm-4 col-7")}}
+            {{ form.confirm_password.label(class="col-5 col-form-label") }}
+            {{ form.confirm_password(class="form-control col-7")}}
         </div>
 
         <div class = "form-errors"> 
             {% for error in form.confirm_password.errors %}
-                <div class = "row"> <span class= "text-danger offset-sm-3 offset-md-2 offset-5"> <small>{{ error }}</small></span> </div> 
+                <div class = "row"> <span class= "text-danger offset-5"> <small>{{ error }}</small></span> </div> 
             {% endfor %}
         </div> 
     </div>
 
 
-    <div class="form-group">
+    <div class="form-group d-flex justify-content-center">
         {{ form.submit(class="btn btn-outline-info") }}
     </div>
+</div> 
 </form>
+</div> 
 
 {% endblock content %}

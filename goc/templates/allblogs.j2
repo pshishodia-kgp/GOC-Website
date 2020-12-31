@@ -6,10 +6,9 @@
 <div class = "col-md-4" style = "margin-top:20px"> 
     <form> 
         <select id = "select-tags" onChange = "selectedTag()" class = "form-control"> 
-            <option value = ''> Select Tags</option>
-            <option value = "None">None</option> 
+            <option value = '' {{'selected' if tag_url == None}}> Select/Remove Tags</option>
             {% for tag in allTags %}
-            <option value = "{{tag.name}}">{{tag.name}}</option> 
+                <option value = "{{tag.name}}" {{'selected' if tag.name == tag_url}}>{{tag.name}}</option> 
             {% endfor %}
         </select> 
     </form>  
@@ -49,14 +48,12 @@ $(document).ready(function () {
 
 function selectedTag(){
     selected_tag = $('#select-tags').val();
-    if(selected_tag){
-        if(selected_tag == "None"){
-            location.href = '/forum'
-        }
-        else{
-            location.href = '/forum?tag=' + selected_tag;
-        }
-    } 
+    if(selected_tag == ''){
+        location.href = '/forum'
+    }
+    else{
+        location.href = '/forum?tag=' + selected_tag;
+    }
 }
 </script> 
 {% endblock %}

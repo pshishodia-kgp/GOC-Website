@@ -1,0 +1,4 @@
+{% set themes = ['danger', 'warning', 'success', 'info', 'primary', 'secondary'] %}
+{% for i in range(tags |length) %}
+    <a href = "{{'/forum?tag=' + tags[i].name}}" class = "{{ 'badge badge-' + themes[i % 6] }}">{{ tags[i].name }}</a> 
+{% endfor %}

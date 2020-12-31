@@ -2,12 +2,12 @@
 {% block content %}
 
 <div class = "container"> 
-    <div class = "row flex-row-reverse rectangular-box"> 
+    <div class = "row flex-row-reverse rounded-box"> 
         <div class = "d-flex 
         justify-content-md-end justify-content-sm-end
         col-md-6 col-sm-12 col-xs-12">
-            <img src="https://userpic.codeforces.com/660745/title/1c9bf68721a715f4.jpg"
-                alt="{{ current_user.username }}" class="flex-shrink-0  rounded-circle img-fluid" style = "height: 250px">
+            <img src="{{ user.profile_pic_url }} "
+                alt="{{ user.username }}" class="flex-shrink-0  rounded-circle img-fluid" style = "height: 250px">
         </div> 
 
         <div class = "justify-content-start col-md-6 col-sm-12 col-xs-12 info"> 
