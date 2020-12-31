@@ -3,7 +3,7 @@
 <p>{{ post.content }}</p> 
 
 <div> 
-<span class = "badge"> x days ago {{ post.published_at }} |
+<span class = "badge"> {{ timeago(post.published_at, datetime) }} |
     <a href = "{{ '/profile/' + post.author.username}}">{{ post.author.username }}</a> 
 </span> 
 <div class = "pull-right"> 
