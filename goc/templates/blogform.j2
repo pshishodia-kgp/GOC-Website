@@ -106,9 +106,6 @@
         </div>
     </div> 
 
-    {% for tag in post_form.tags %}
-        <p>{{tag.label}} {{ tag }}</p>
-    {% endfor %}
-    <p>{{ post_form.addTag(class= "btn btn-success btn-sm") }}</p> 
+    <p>{{ post_form.tags.label }} {{ post_form.tags }}</p>
 
 {% endblock %}

@@ -100,13 +100,7 @@ def submitPost():
             blog_form.shortlisting.rounds.append_entry()
             return render_template('blogform.j2', post_form=blog_form)
         
-        if(blog_form.addTag.data):
-            blog_form.tags.append_entry()
-            return render_template('blogform.j2', post_form=blog_form)
-        
         if(blog_form.validate_on_submit()):
-            #First make all tags unique
-            tags = [str(x) for x in set(blog_form.tags.data)]
 
             post_data = Post(
                 title = str(blog_form.title.data),
@@ -136,7 +130,10 @@ def submitPost():
             
             blog_id = blog_data.id
 
-            for ttag in tags:
+            tags = blog_form.tags.data.split()
+            uniqueTags = [tag for tag in set(tags)]
+
+            for ttag in uniqueTags:
                 tag = Tag(name=ttag)
                 post_data.tags.append(tag)
                 tag.posts.append(post_data)
@@ -182,10 +179,6 @@ def submitPost():
     elif isBlog == 'False':
         post_form = PostForm()
 
-        if(post_form.addTag.data):
-            post_form.tags.append_entry()
-            return render_template('postform.j2', post_form=post_form)
-        
         if post_form.validate_on_submit():
             tags = [str(x) for x in set(post_form.tags.data)]
 
@@ -201,7 +194,10 @@ def submitPost():
             except:
                 return "Error in adding Post"
             
-            for ttag in tags:
+            tags = post_form.tags.data.split()
+            uniqueTags = [tag for tag in set(tags)]
+
+            for ttag in uniqueTags:
                 tag = Tag(name=ttag)
                 post_data.tags.append(tag)
                 tag.posts.append(post_data)
