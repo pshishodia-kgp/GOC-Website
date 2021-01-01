@@ -134,13 +134,18 @@ def submitPost():
             uniqueTags = [tag for tag in set(tags)]
 
             for ttag in uniqueTags:
-                tag = Tag(name=ttag)
-                post_data.tags.append(tag)
-                tag.posts.append(post_data)
-                try:
-                    db.session.add(tag)
-                except:
-                    return "Error in Adding Tag"              
+                tag = Tag.query.filter_by(name=ttag).first()
+                if not tag:
+                    tag = Tag(name=ttag)
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
+                    try:
+                        db.session.add(tag)
+                    except:
+                        return "Error in Adding Tag"
+                else:
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)              
             
             for round in blog_form.shortlisting.rounds:
                 current_round = Round(
@@ -198,13 +203,18 @@ def submitPost():
             uniqueTags = [tag for tag in set(tags)]
 
             for ttag in uniqueTags:
-                tag = Tag(name=ttag)
-                post_data.tags.append(tag)
-                tag.posts.append(post_data)
-                try:
-                    db.session.add(tag)
-                except:
-                    return "Error in Adding Tag"
+                tag = Tag.query.filter_by(name=ttag).first()
+                if not tag:
+                    tag = Tag(name=ttag)
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
+                    try:
+                        db.session.add(tag)
+                    except:
+                        return "Error in Adding Tag"
+                else:
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
             
             try:
                 db.session.commit()                       
