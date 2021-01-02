@@ -1,4 +1,3 @@
-import json, requests, random
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db, USERNAME_REGEX_NOT
@@ -88,6 +87,7 @@ def logout():
 def submitPost():
 
     isBlog = request.args.get('interview')
+    allTags = Tag.query.all()
 
     if isBlog == 'True':
         blog_form = BlogForm()
@@ -131,9 +131,8 @@ def submitPost():
             blog_id = blog_data.id
 
             tags = blog_form.tags.data.split()
-            uniqueTags = [tag for tag in set(tags)]
 
-            for ttag in uniqueTags:
+            for ttag in tags:
                 tag = Tag.query.filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
@@ -180,7 +179,7 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('blogform.j2', post_form=blog_form)
+        return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
     elif isBlog == 'False':
         post_form = PostForm()
 
@@ -200,9 +199,8 @@ def submitPost():
                 return "Error in adding Post"
             
             tags = post_form.tags.data.split()
-            uniqueTags = [tag for tag in set(tags)]
 
-            for ttag in uniqueTags:
+            for ttag in tags:
                 tag = Tag.query.filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
@@ -224,7 +222,7 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('postform.j2', post_form=post_form)
+        return render_template('postform.j2', post_form=post_form, allTags=allTags)
     else: 
         return redirect(url_for('home'))
 
