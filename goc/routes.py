@@ -94,11 +94,11 @@ def submitPost():
 
         if(blog_form.addInterview.data):
             blog_form.interview.rounds.append_entry()        
-            return render_template('blogform.j2', post_form=blog_form)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
         
         if(blog_form.addShortListing.data):
             blog_form.shortlisting.rounds.append_entry()
-            return render_template('blogform.j2', post_form=blog_form)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
         
         if(blog_form.validate_on_submit()):
 
@@ -164,7 +164,9 @@ def submitPost():
                     round_type = RoundType.interview,
                     company_name = str(round.company_name.data),
                     content = str(round.content.data),
-                    blog_id = blog_id
+                    blog_id = blog_id,
+                    selected = round.selected.data,
+                    joining = round.joining.data
                 )
                 try:
                     db.session.add(current_round)

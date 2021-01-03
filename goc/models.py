@@ -50,6 +50,7 @@ class Round(db.Model):
     content = db.Column(db.Text, nullable=False)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
     selected = db.Column(db.Boolean, default=0)
+    joining = db.Column(db.Boolean, default=0)
 
 
 
