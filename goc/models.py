@@ -8,6 +8,16 @@ Association = db.Table('association_table',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
 
+CommentVotes = db.Table('comment_votes_table', 
+    db.Column('comment_id', db.Integer, db.ForeignKey('comment.id')),
+    db.Column('vote_id', db.Integer, db.ForeignKey('vote.id'))
+)
+
+PostVotes = db.Table('post_votes_table', 
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('vote_id', db.Integer, db.ForeignKey('vote.id'))
+)
+
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
@@ -15,6 +25,14 @@ class Blog(db.Model):
     interview_content = db.Column(db.Text, nullable=True)
     rounds = db.relationship('Round', backref='blog', lazy=True)
 
+class PostOrComment(enum.Enum): 
+    post = 'post'
+    comment = 'comment'
+class Vote(db.Model): 
+    id = db.Column(db.Integer, primary_key = True)
+    vote_value = db.Column(db.Integer, default = 0)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    vote_on = db.Column(db.Enum(PostOrComment), nullable = False)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +43,8 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     comments = db.relationship('Comment', backref = 'post', lazy = True)
     tags = db.relationship('Tag', backref='post', secondary='association_table', lazy="dynamic")
+    votes_count = db.Column(db.Integer, default = 0)
+    votes = db.relationship('Vote', secondary = PostVotes, lazy = "dynamic")
 
     def __repr__(self):
         return self.title
@@ -63,6 +83,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(40), nullable=False)
     comments = db.relationship('Comment', backref = 'author', lazy = True)
     posts = db.relationship('Post', backref='author', lazy=True)
+    votes = db.relationship('Vote', backref = 'user', lazy = True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -78,6 +99,8 @@ class Comment(db.Model):
     downvotes = db.Column(db.Integer, default = 0)
     depth = db.Column(db.Integer, default = 0)
     published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    votes = db.relationship('Vote', secondary = CommentVotes, lazy = "dynamic")
+    votes_count = db.Column(db.Integer, default = 0)
 
     def __repr__(self): 
         return f"Comment('{self.content}', by: {self.author.username})"
@@ -89,3 +112,4 @@ admin.add_view(ModelView(Tag, db.session))
 admin.add_view(ModelView(Round, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Comment, db.session))
+admin.add_view(ModelView(Vote, db.session))
