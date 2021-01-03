@@ -15,10 +15,51 @@
 
     {% block formcontent %}
     {% endblock %}
+    
+    <label for="selected-tags">Enter space separated tags: </label>
+    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()" onLoad="LoadTag()">
+        {% for tag in allTags %}
+            <option value="{{tag.name}}">{{tag.name}}</option>
+        {% endfor %}
+    </select>
+    {{ post_form.tags(type="hidden") }}
+    {% for error in post_form.tags.errors %}
+        <div class = "row", style="margin: auto;"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
+    {% endfor %}
+
+    <br><br>
     {% for error in post_form.submit.errors %}
         <div class = "row"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
     {% endfor %}
     {{ post_form.submit(class = "btn btn-primary") }}
 </form>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $("#selected-tags").select2({
+        tags: true,
+        tokenSeparators: [' ']
+    });
+});
+
+function LoadTag(){
+    tag_string = '{{post_form.tags.data}}';
+    $('#selected-tags').val(tag_string);
+    console.log(tag_string);
+}
+
+function selectedTag(){
+    tag_data = $("#selected-tags").val();
+    var tag_string = "";
+    tag_data.forEach(function(value){
+        tag_string = tag_string + value + " ";
+    });
+    $("#tags").val(tag_string);
+}
+
+</script>
 
 {% endblock %}

@@ -5,9 +5,4 @@
         {{ post_form.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none", 
         placeholder = "Enter your post here") }}
     </div>
-    
-    {% for tag in post_form.tags %}
-        <p>{{tag.label}} {{ tag }}</p>
-    {% endfor %}
-    <p>{{ post_form.addTag(class= "btn btn-success btn-sm") }}</p> 
 {% endblock %}

@@ -82,8 +82,7 @@ class LoginForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()]) 
     content = StringField('Content', validators=[DataRequired()], widget=TextArea())
-    tags = FieldList(StringField('Tag', validators=[DataRequired()]))
-    addTag = SubmitField('Add Another Tag')
+    tags = StringField('Tag', validators=[DataRequired()])
     submit = SubmitField('Add Post')
 
 class ShortlistingRound(FlaskForm):
