@@ -95,8 +95,6 @@ class Comment(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     parent = db.relationship(lambda: Comment, remote_side = id, backref = 'children')
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
-    upvotes = db.Column(db.Integer, default = 0)
-    downvotes = db.Column(db.Integer, default = 0)
     depth = db.Column(db.Integer, default = 0)
     published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     votes = db.relationship('Vote', secondary = CommentVotes, lazy = "dynamic")

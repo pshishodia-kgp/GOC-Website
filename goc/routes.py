@@ -283,11 +283,12 @@ def upvote_downvote(post_or_comment, id):
     if voted_obj == None: 
         return f"No such {post_or_comment} exists"
 
-    vote = voted_obj.votes.query.filter_by(user_id == current_user.id).first()
+
+    vote = next((vote for vote in voted_obj.votes.all() if vote.user_id == current_user.id ), None)
     if vote and vote.vote_value == vote_value: 
         flash('Your previous vote is same', 'info')
     elif vote and vote.vote_value != vote_value: 
-        diff = vote_val - vote.vote_value
+        diff = vote_value - vote.vote_value
         try:  
             vote.vote_value = vote_value
             voted_obj.votes_count += diff
@@ -300,10 +301,10 @@ def upvote_downvote(post_or_comment, id):
         vote = Vote(
             user_id = current_user.id,
             vote_value = vote_value,
-            vote_on = postOrComment
+            vote_on = vote_on
         )
         try:
-            voted_obj.votes_count += upvote
+            voted_obj.votes_count += vote_value
             voted_obj.votes.append(vote)
             current_user.votes.append(vote)
             db.session.add(vote)
@@ -312,4 +313,5 @@ def upvote_downvote(post_or_comment, id):
             flash('Thanks for voting')
         except: 
             flash('Error in adding your vote')
-    return 'Hehe'
+    
+    return json.dumps(voted_obj.votes_count); 
