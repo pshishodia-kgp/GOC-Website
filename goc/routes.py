@@ -65,6 +65,7 @@ def signup():
             profile_pic_url = form.profile_pic_url.data)
         db.session.add(user)
         db.session.commit()
+        login_user(user)
         return redirect(url_for('signup_verified'))
     return render_template('signup.j2', title='Sign Up', form = form)
 
@@ -258,3 +259,59 @@ def profile(username):
         return 'Invalid Username'
     
     return render_template('user_profile.j2', user = user)
+
+# Upvoting a post will have url /vote/post/post_id?upvote=True
+@app.route('/vote/<post_or_comment>/<int:id>')
+@login_required
+def upvote_downvote(post_or_comment, id): 
+    upvote = request.args.get('upvote')
+    if not upvote: 
+        return 'Error'
+    if upvote != 'True' and upvote != 'False': 
+        return 'Error'
+    if post_or_comment != 'post' and post_or_comment != 'comment': 
+        return 'Error'
+
+    vote_value = 1 if upvote == 'True' else -1
+    
+    voted_obj = None
+    if post_or_comment == 'post':
+        voted_obj = Post.query.filter_by(id = id).first()
+    elif post_or_comment == 'comment':
+        voted_obj = Comment.query.filter_by(id = id).first()
+
+    if voted_obj == None: 
+        return f"No such {post_or_comment} exists"
+
+
+    vote = next((vote for vote in voted_obj.votes.all() if vote.user_id == current_user.id ), None)
+    if vote and vote.vote_value == vote_value: 
+        flash('Your previous vote is same', 'info')
+    elif vote and vote.vote_value != vote_value: 
+        diff = vote_value - vote.vote_value
+        try:  
+            vote.vote_value = vote_value
+            voted_obj.votes_count += diff
+            db.session.commit()
+            flash('Your vote has been updated', 'info')
+        except: 
+            flash('Error in updating vote', 'danger')
+    else: 
+        vote_on = PostOrComment.post if (post_or_comment == 'post') else PostOrComment.comment
+        vote = Vote(
+            user_id = current_user.id,
+            vote_value = vote_value,
+            vote_on = vote_on
+        )
+        try:
+            voted_obj.votes_count += vote_value
+            voted_obj.votes.append(vote)
+            current_user.votes.append(vote)
+            db.session.add(vote)
+            db.session.add(vote)
+            db.session.commit()
+            flash('Thanks for voting')
+        except: 
+            flash('Error in adding your vote')
+    
+    return json.dumps(voted_obj.votes_count); 
