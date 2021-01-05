@@ -17,6 +17,7 @@
 <div class = "col-md-6"> 
     <a href = "/createPost?interview=True" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Add Interview Blog</a>
     <a href = "/createPost?interview=False" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Create Post</a>
+    <a href = "/forum?interview=True" class = "btn btn-info btn-sm" role = "button" style = "margin-top: 20px">Show Interview Posts Only</a>
     {% for post in posts.items %}
         {% include 'shortBlog.j2' %}
     {% endfor %}
@@ -24,13 +25,13 @@
     <nav aria-label="Page navigation example">
     <ul class="pagination">
         {% if posts.has_prev %}
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url) }}">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url) }}">{{ posts.prev().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url, interview=interview) }}">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.prev().page, tag=tag_url, interview=interview) }}">{{ posts.prev().page }}</a></li>
         {% endif%}
-        <li class="page-item active"><a class="page-link" href="{{ url_for('postList', page=posts.page, tag=tag_url) }}">{{ posts.page }}</a></li>
+        <li class="page-item active"><a class="page-link" href="{{ url_for('postList', page=posts.page, tag=tag_url, interview=interview) }}">{{ posts.page }}</a></li>
         {% if posts.has_next %}
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url) }}">{{ posts.next().page }}</a></li>
-            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url) }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url, interview=interview) }}">{{ posts.next().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('postList', page=posts.next().page, tag=tag_url, interview=interview) }}">Next</a></li>
         {% endif %}
     </ul>
     </nav>
@@ -49,10 +50,18 @@ $(document).ready(function () {
 function selectedTag(){
     selected_tag = $('#select-tags').val();
     if(selected_tag == ''){
-        location.href = '/forum'
+        {% if interview %}
+        location.href = '/forum?interview='+'{{interview}}';
+        {% else %}
+        location.href = '/forum';
+        {% endif %}
     }
     else{
-        location.href = '/forum?tag=' + selected_tag;
+        {% if interview %}
+        location.href = '/forum?interview='+'{{interview}}'+'&tag='+selected_tag;
+        {% else %}
+        location.href = '/forum?tag='+selected_tag;
+        {% endif %}
     }
 }
 </script> 

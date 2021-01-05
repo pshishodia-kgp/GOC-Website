@@ -1,4 +1,5 @@
 import json
+from sqlalchemy import and_
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db, USERNAME_REGEX_NOT
@@ -13,14 +14,23 @@ def home():
 
 @app.route('/forum')
 def postList():
-    tag_url = request.args.get('tag')
-    page = request.args.get('page', 1, int)
-    if tag_url:
-        posts = Post.query.filter(Post.tags.any(name=tag_url)).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+    interview = request.args.get('interview')
+    if interview == 'True':
+        tag_url = request.args.get('tag')
+        page = request.args.get('page', 1, int)
+        if tag_url:
+            posts = Post.query.filter(and_(Post.blog != None, Post.tags.any(name=tag_url))).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+        else:
+            posts = Post.query.filter(Post.blog != None).order_by(Post.id.desc()).paginate(per_page=2, page=page)
     else:
-        posts = Post.query.order_by(Post.id.desc()).paginate(per_page=2, page=page)
-    tags = Tag.query.group_by(Tag.name).all()
-    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url)
+        tag_url = request.args.get('tag')
+        page = request.args.get('page', 1, int)
+        if tag_url:
+            posts = Post.query.filter(Post.tags.any(name=tag_url)).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+        else:
+            posts = Post.query.order_by(Post.id.desc()).paginate(per_page=2, page=page)
+    tags = Tag.query.all()
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url, interview=interview)
 
 @app.route('/post')           ## get single blog having given id
 def post():
