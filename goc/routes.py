@@ -1,4 +1,5 @@
-import json, requests, random
+import json
+from sqlalchemy import and_
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db, USERNAME_REGEX_NOT
@@ -13,14 +14,23 @@ def home():
 
 @app.route('/forum')
 def postList():
-    tag_url = request.args.get('tag')
-    page = request.args.get('page', 1, int)
-    if tag_url:
-        posts = Post.query.filter(Post.tags.any(name=tag_url)).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+    interview = request.args.get('interview')
+    if interview == 'True':
+        tag_url = request.args.get('tag')
+        page = request.args.get('page', 1, int)
+        if tag_url:
+            posts = Post.query.filter(and_(Post.blog != None, Post.tags.any(name=tag_url))).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+        else:
+            posts = Post.query.filter(Post.blog != None).order_by(Post.id.desc()).paginate(per_page=2, page=page)
     else:
-        posts = Post.query.order_by(Post.id.desc()).paginate(per_page=2, page=page)
-    tags = Tag.query.group_by(Tag.name).all()
-    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url)
+        tag_url = request.args.get('tag')
+        page = request.args.get('page', 1, int)
+        if tag_url:
+            posts = Post.query.filter(Post.tags.any(name=tag_url)).order_by(Post.id.desc()).paginate(per_page=2, page=page)
+        else:
+            posts = Post.query.order_by(Post.id.desc()).paginate(per_page=2, page=page)
+    tags = Tag.query.all()
+    return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url, interview=interview)
 
 @app.route('/post')           ## get single blog having given id
 def post():
@@ -89,25 +99,20 @@ def logout():
 def submitPost():
 
     isBlog = request.args.get('interview')
+    allTags = Tag.query.all()
 
     if isBlog == 'True':
         blog_form = BlogForm()
 
         if(blog_form.addInterview.data):
             blog_form.interview.rounds.append_entry()        
-            return render_template('blogform.j2', post_form=blog_form)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
         
         if(blog_form.addShortListing.data):
             blog_form.shortlisting.rounds.append_entry()
-            return render_template('blogform.j2', post_form=blog_form)
-        
-        if(blog_form.addTag.data):
-            blog_form.tags.append_entry()
-            return render_template('blogform.j2', post_form=blog_form)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
         
         if(blog_form.validate_on_submit()):
-            #First make all tags unique
-            tags = [str(x) for x in set(blog_form.tags.data)]
 
             post_data = Post(
                 title = str(blog_form.title.data),
@@ -137,14 +142,22 @@ def submitPost():
             
             blog_id = blog_data.id
 
+            tags = blog_form.tags.data.split()
+
             for ttag in tags:
-                tag = Tag(name=ttag)
-                post_data.tags.append(tag)
-                tag.posts.append(post_data)
-                try:
-                    db.session.add(tag)
-                except:
-                    return "Error in Adding Tag"              
+                tag = Tag.query.filter_by(name=ttag).first()
+                if not tag:
+                    tag = Tag(name=ttag)
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
+                    try:
+                        db.session.add(tag)
+                        db.session.commit()
+                    except:
+                        return "Error in Adding Tag"
+                else:
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)              
             
             for round in blog_form.shortlisting.rounds:
                 current_round = Round(
@@ -154,6 +167,14 @@ def submitPost():
                     blog_id = blog_id,
                     selected = round.selected.data
                 )
+                tag = Tag.query.filter_by(name=current_round.company_name).first()
+                if tag:
+                    tag.isCompany = True
+                else:
+                    tag = Tag(name=current_round.company_name, isCompany=True)
+                    tag.posts.append(post_data)
+                    post_data.tags.append(tag)
+                    db.session.add(tag)
                 try:
                     db.session.add(current_round)
                 except:
@@ -164,7 +185,9 @@ def submitPost():
                     round_type = RoundType.interview,
                     company_name = str(round.company_name.data),
                     content = str(round.content.data),
-                    blog_id = blog_id
+                    blog_id = blog_id,
+                    selected = round.selected.data,
+                    joining = round.joining.data
                 )
                 try:
                     db.session.add(current_round)
@@ -179,14 +202,10 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('blogform.j2', post_form=blog_form)
+        return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
     elif isBlog == 'False':
         post_form = PostForm()
 
-        if(post_form.addTag.data):
-            post_form.tags.append_entry()
-            return render_template('postform.j2', post_form=post_form)
-        
         if post_form.validate_on_submit():
             tags = [str(x) for x in set(post_form.tags.data)]
 
@@ -202,14 +221,21 @@ def submitPost():
             except:
                 return "Error in adding Post"
             
+            tags = post_form.tags.data.split()
+
             for ttag in tags:
-                tag = Tag(name=ttag)
-                post_data.tags.append(tag)
-                tag.posts.append(post_data)
-                try:
-                    db.session.add(tag)
-                except:
-                    return "Error in Adding Tag"
+                tag = Tag.query.filter_by(name=ttag).first()
+                if not tag:
+                    tag = Tag(name=ttag)
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
+                    try:
+                        db.session.add(tag)
+                    except:
+                        return "Error in Adding Tag"
+                else:
+                    post_data.tags.append(tag)
+                    tag.posts.append(post_data)
             
             try:
                 db.session.commit()                       
@@ -219,7 +245,7 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('postform.j2', post_form=post_form)
+        return render_template('postform.j2', post_form=post_form, allTags=allTags, isBlog=isBlog)
     else: 
         return redirect(url_for('home'))
 

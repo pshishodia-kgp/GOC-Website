@@ -54,6 +54,10 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(20), nullable=False)
     posts = db.relationship('Post', backref='tag', secondary='association_table', lazy="dynamic")
+    isCompany = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return self.name
 
 
 class RoundType(enum.Enum):
@@ -67,6 +71,7 @@ class Round(db.Model):
     content = db.Column(db.Text, nullable=False)
     blog_id = db.Column(db.Integer, db.ForeignKey('blog.id'), nullable=True)
     selected = db.Column(db.Boolean, default=0)
+    joining = db.Column(db.Boolean, default=0)
 
 
 

@@ -15,10 +15,102 @@
 
     {% block formcontent %}
     {% endblock %}
+    
+    <label for="selected-tags">Enter space separated tags: </label>
+    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()">
+        {% for tag in allTags %}
+            <option value="{{tag.name}}">{{tag.name}}</option>
+        {% endfor %}
+    </select>
+    {{ post_form.tags(type="hidden") }}
+    {% for error in post_form.tags.errors %}
+        <div class = "row", style="margin: auto;"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
+    {% endfor %}
+
+    <br><br>
     {% for error in post_form.submit.errors %}
         <div class = "row"> <span class= "text-danger"> <small>{{ error }}</small></span> </div>
     {% endfor %}
     {{ post_form.submit(class = "btn btn-primary") }}
 </form>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $("#selected-tags").select2({
+        tags: true,
+        tokenSeparators: [' ']
+    });
+    
+    var tag_string = $('#tags').val();
+    var words = new Set(tag_string.split(' '));
+    words.delete("");
+    for (var word of words) {
+        if($('#selected-tags').find("option[value='" + word + "']").length == 0) {
+            var newOption = new Option(word, word, false, false);
+            $('#selected-tags').append(newOption);
+        }
+    }
+    var tags = Array.from(words);
+    $('#selected-tags').val(tags).trigger('change');
+
+    {% if isBlog == 'True' %}
+
+    {% for round in post_form.interview.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% for round in post_form.shortlisting.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% endif %}
+});
+
+function selectedTag(){
+    var tag_data = $("#selected-tags").val();
+    var tag_string = "";
+    tag_data.forEach(function(value){
+        tag_string = tag_string + value + " ";
+    });
+    $("#tags").val(tag_string);
+}
+
+{% if isBlog == 'True' %}
+function companyNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+function companyShortListNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+{% endif %}
+
+</script>
 
 {% endblock %}
