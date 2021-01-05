@@ -55,16 +55,61 @@ $(document).ready(function(){
     }
     var tags = Array.from(words);
     $('#selected-tags').val(tags).trigger('change');
+
+    {% if isBlog == 'True' %}
+
+    {% for round in post_form.interview.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% for round in post_form.shortlisting.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% endif %}
 });
 
 function selectedTag(){
-    tag_data = $("#selected-tags").val();
-    var tag_string = $('#tags').val();
+    var tag_data = $("#selected-tags").val();
+    var tag_string = "";
     tag_data.forEach(function(value){
         tag_string = tag_string + value + " ";
     });
     $("#tags").val(tag_string);
 }
+
+{% if isBlog == 'True' %}
+function companyNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+function companyShortListNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+{% endif %}
 
 </script>
 

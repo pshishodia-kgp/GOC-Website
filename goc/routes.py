@@ -94,11 +94,11 @@ def submitPost():
 
         if(blog_form.addInterview.data):
             blog_form.interview.rounds.append_entry()        
-            return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
         
         if(blog_form.addShortListing.data):
             blog_form.shortlisting.rounds.append_entry()
-            return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
+            return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
         
         if(blog_form.validate_on_submit()):
 
@@ -140,6 +140,7 @@ def submitPost():
                     tag.posts.append(post_data)
                     try:
                         db.session.add(tag)
+                        db.session.commit()
                     except:
                         return "Error in Adding Tag"
                 else:
@@ -154,6 +155,14 @@ def submitPost():
                     blog_id = blog_id,
                     selected = round.selected.data
                 )
+                tag = Tag.query.filter_by(name=current_round.company_name).first()
+                if tag:
+                    tag.isCompany = True
+                else:
+                    tag = Tag(name=current_round.company_name, isCompany=True)
+                    tag.posts.append(post_data)
+                    post_data.tags.append(tag)
+                    db.session.add(tag)
                 try:
                     db.session.add(current_round)
                 except:
@@ -181,7 +190,7 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('blogform.j2', post_form=blog_form, allTags=allTags)
+        return render_template('blogform.j2', post_form=blog_form, allTags=allTags, isBlog=isBlog)
     elif isBlog == 'False':
         post_form = PostForm()
 
@@ -224,7 +233,7 @@ def submitPost():
             flash('Post Added Successfully!', 'success')
             return redirect(url_for('postList'))
 
-        return render_template('postform.j2', post_form=post_form, allTags=allTags)
+        return render_template('postform.j2', post_form=post_form, allTags=allTags, isBlog=isBlog)
     else: 
         return redirect(url_for('home'))
 
