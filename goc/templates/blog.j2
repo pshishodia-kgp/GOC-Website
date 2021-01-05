@@ -24,7 +24,7 @@
                     <li class="nav-item">
                         <a class="{{ 'nav-link ' + ('active' if loop.first else '')}}"
                         id="{{ round.company_name + '-shortlisting-controller'}}"
-                            data-toggle="tab" href="{{'#' + round.company_name + '-shortlisting-content'}}"
+                            data-toggle="tab" href="{{'#' + round.company_name|replace(" ","-") + '-shortlisting-content'}}"
                             role="tab"
                             aria-controls="{{ round.company_name + '-shortlisting-controller'}}"
                             aria-selected="true">
@@ -39,7 +39,7 @@
                 {% for round in post.blog.rounds %}
                     {% if round.round_type.value == 'shortlisting' %}
                         <div class="{{'tab-pane fade ' + ('show active' if loop.first else '') }}" 
-                        id="{{round.company_name + '-shortlisting-content'}}" role="tabpanel" aria-labelledby="contact-tab">
+                        id="{{round.company_name|replace(" ","-") + '-shortlisting-content'}}" role="tabpanel" aria-labelledby="contact-tab">
 
                             {{ round.content }}
 
@@ -62,7 +62,7 @@
                     <li class="nav-item">
                         <a class="{{ 'nav-link ' + ('active' if loop.first else '')}}"
                         id="{{ round.company_name + '-interview-controller'}}"
-                            data-toggle="tab" href="{{'#' + round.company_name + '-interview-content'}}"
+                            data-toggle="tab" href="{{'#' + round.company_name|replace(" ","-") + '-interview-content'}}"
                             role="tab"
                             aria-controls="{{ round.company_name + '-interview-controller'}}"
                             aria-selected="true">
@@ -77,7 +77,7 @@
                 {% for round in post.blog.rounds %}
                     {% if round.round_type.value == 'interview' %}
                         <div class="{{'tab-pane fade ' + ('show active' if loop.first else '') }}" 
-                        id="{{round.company_name + '-interview-content'}}" role="tabpanel" aria-labelledby="contact-tab">
+                        id="{{round.company_name|replace(" ","-") + '-interview-content'}}" role="tabpanel" aria-labelledby="contact-tab">
 
                             {{ round.content }}
 
@@ -90,14 +90,29 @@
         </div> 
     {% endif %}
     
-    <div class = "pull-right"> 
-        {% with tags = post.tags.all() %}
-            {% include 'tags.j2' %}
-        {% endwith %}
-    </div> 
+        <div class = "pull-right"> 
+            {% with tags = post.tags.all() %}
+                {% include 'tags.j2' %}
+            {% endwith %}
+        </div> 
+
+        <div class = "d-flex">
+            <div> <i class = "vote upvote material-icons" role = "button" style = "font-size:50px"
+            data-id = "{{post.id}}"
+            data-type = "post"
+            data-upvote = "True"
+            data-target = "{{'#votes-post-' + (post.id)|string}}">arrow_drop_up</i></div>      
+
+            <div style = "text-align:center" class = "mt-3"> <span id = "{{'votes-post-' + (post.id)|string}}">{{post.votes_count}}</span></div> 
+            <div> <i class = "vote downvote material-icons" role = "button" style = "font-size: 50px"
+            data-id = "{{post.id}}"
+            data-type = "post"
+            data-upvote = "False"
+            data-target = "{{'#votes-post-' + (post.id)|string}}">arrow_drop_down</i> </div> 
+        </div>
+
     </div> 
     <hr>
-
     {% include 'comments.j2'%}
 </div>
 

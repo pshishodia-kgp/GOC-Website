@@ -10,9 +10,21 @@
     
 
     <div> 
-        <div> <i class = "material-icons">arrow_drop_up</i></div>      
-        <div> <i class = "material-icons" style = "color: blue;">arrow_drop_down</i> </div> 
-    </div> 
+        <div> <i class = "vote upvote material-icons" role = "button"
+        data-id = "{{comment.id}}"
+        data-type = "comment"
+        data-upvote = "True"
+        data-target = "{{'#votes-comment-' + (comment.id)|string}}">arrow_drop_up</i></div>      
+
+        <div style = "text-align:center"> <span id = "{{'votes-comment-' + (comment.id)|string}}">{{comment.votes_count}}</span></div> 
+        <div> <i class = "vote downvote material-icons" role = "button"
+        data-id = "{{comment.id}}"
+        data-type = "comment"
+        data-upvote = "False"
+        data-target = "{{'#votes-comment-' + (comment.id)|string}}">arrow_drop_down</i> </div> 
+        
+    </div>
+
     <div>
         <small>{{ timeago(comment.published_at, datetime) }}
         {% if not onBlog %}

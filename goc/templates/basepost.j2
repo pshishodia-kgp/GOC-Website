@@ -17,7 +17,7 @@
     {% endblock %}
     
     <label for="selected-tags">Enter space separated tags: </label>
-    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()" onLoad="LoadTag()">
+    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()">
         {% for tag in allTags %}
             <option value="{{tag.name}}">{{tag.name}}</option>
         {% endfor %}
@@ -43,22 +43,73 @@ $(document).ready(function(){
         tags: true,
         tokenSeparators: [' ']
     });
+    
+    var tag_string = $('#tags').val();
+    var words = new Set(tag_string.split(' '));
+    words.delete("");
+    for (var word of words) {
+        if($('#selected-tags').find("option[value='" + word + "']").length == 0) {
+            var newOption = new Option(word, word, false, false);
+            $('#selected-tags').append(newOption);
+        }
+    }
+    var tags = Array.from(words);
+    $('#selected-tags').val(tags).trigger('change');
+
+    {% if isBlog == 'True' %}
+
+    {% for round in post_form.interview.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% for round in post_form.shortlisting.rounds %}
+    $('#selected-' + '{{round.name}}').select2({
+        tags: true,
+        width: '120px'
+    });
+
+    var company = $('#'+'{{round.name}}'+'-company_name').val();
+    if($('#selected-'+'{{round.name}}').find("option[value='"+company+"']").length == 0) {
+        var newOption = new Option(company, company, false, false);
+        $('#selected-'+'{{round.name}}').append(newOption);
+    }
+    $('#selected-'+'{{round.name}}').val(company).trigger('change');
+
+    {% endfor %}
+
+    {% endif %}
 });
 
-function LoadTag(){
-    tag_string = '{{post_form.tags.data}}';
-    $('#selected-tags').val(tag_string);
-    console.log(tag_string);
-}
-
 function selectedTag(){
-    tag_data = $("#selected-tags").val();
+    var tag_data = $("#selected-tags").val();
     var tag_string = "";
     tag_data.forEach(function(value){
         tag_string = tag_string + value + " ";
     });
     $("#tags").val(tag_string);
 }
+
+{% if isBlog == 'True' %}
+function companyNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+function companyShortListNames(company){
+    var company_data = $('#selected-' + company).val();
+    $('#'+company+'-company_name').val(company_data);
+}
+{% endif %}
 
 </script>
 

@@ -5,3 +5,11 @@
     border-width : .2rem .2rem .2rem .2rem;
     border-radius: 1rem; 
 }
+
+.upvote:hover {
+    color: green; 
+}
+
+.downvote:hover {
+    color: red; 
+}
