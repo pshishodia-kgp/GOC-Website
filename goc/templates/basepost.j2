@@ -17,7 +17,7 @@
     {% endblock %}
     
     <label for="selected-tags">Enter space separated tags: </label>
-    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()" onLoad="LoadTag()">
+    <select class="form-control" multiple="multiple" id="selected-tags" onChange="selectedTag()">
         {% for tag in allTags %}
             <option value="{{tag.name}}">{{tag.name}}</option>
         {% endfor %}
@@ -43,17 +43,23 @@ $(document).ready(function(){
         tags: true,
         tokenSeparators: [' ']
     });
+    
+    var tag_string = $('#tags').val();
+    var words = new Set(tag_string.split(' '));
+    words.delete("");
+    for (var word of words) {
+        if($('#selected-tags').find("option[value='" + word + "']").length == 0) {
+            var newOption = new Option(word, word, false, false);
+            $('#selected-tags').append(newOption);
+        }
+    }
+    var tags = Array.from(words);
+    $('#selected-tags').val(tags).trigger('change');
 });
-
-function LoadTag(){
-    tag_string = '{{post_form.tags.data}}';
-    $('#selected-tags').val(tag_string);
-    console.log(tag_string);
-}
 
 function selectedTag(){
     tag_data = $("#selected-tags").val();
-    var tag_string = "";
+    var tag_string = $('#tags').val();
     tag_data.forEach(function(value){
         tag_string = tag_string + value + " ";
     });
