@@ -341,3 +341,24 @@ def upvote_downvote(post_or_comment, id):
             flash('Error in adding your vote')
     
     return json.dumps(voted_obj.votes_count); 
+
+
+# Leaderboard route
+
+@app.route('/leaderboard')
+def leaderboard():
+    page = request.args.get('page', 1, int)
+    order = request.args.get('order')
+    if order == 'BY_USERNAME_ASC':
+        kgpians = Kgpians.query.order_by(Kgpians.username.asc()).paginate(per_page=100, page=page)
+    elif order == 'BY_USERNAME_DSC':
+        kgpians = Kgpians.query.order_by(Kgpians.username.desc()).paginate(per_page=100, page=page)
+    elif order == 'BY_RATING_ASC':
+        kgpians = Kgpians.query.order_by(Kgpians.rating.asc()).paginate(per_page=100, page=page)
+    elif order == 'BY_MAXRATING_ASC':
+        kgpians = Kgpians.query.order_by(Kgpians.maxrating.asc()).paginate(per_page=100, page=page)
+    elif order == 'BY_MAXRATING_DSC':
+        kgpians = Kgpians.query.order_by(Kgpians.maxrating.desc()).paginate(per_page=100, page=page)
+    else:
+        kgpians = Kgpians.query.order_by(Kgpians.rating.desc()).paginate(per_page=100, page=page)
+    return render_template('leaderboard.j2', kgpians=kgpians, order=order)

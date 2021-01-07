@@ -108,6 +108,12 @@ class Comment(db.Model):
     def __repr__(self): 
         return f"Comment('{self.content}', by: {self.author.username})"
 
+class Kgpians(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    maxrating = db.Column(db.Integer, nullable=False)
+
 admin.add_view(ModelView(Blog, db.session))
 admin.add_view(ModelView(Post, db.session))
 admin.add_view(ModelView(Tag, db.session))
