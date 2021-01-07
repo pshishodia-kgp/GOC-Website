@@ -108,11 +108,37 @@ class Comment(db.Model):
     def __repr__(self): 
         return f"Comment('{self.content}', by: {self.author.username})"
 
-class Kgpians(db.Model):
+class Kgpian(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    maxrating = db.Column(db.Integer, nullable=False)
+    max_rating = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self): 
+        return self.username
+
+class RegionalSite(enum.Enum): 
+    Gwalior = 'Gwalior'
+    Pune = 'Pune'
+    Kolkata = 'Kolkata'
+    Amritapuri = 'Amritapuri'
+    Kanpur = 'Kanpur'
+    Kharagpur = 'Kharagpur'
+    AsiaWest = 'Asia West'
+
+class Team(db.Model): 
+    id = db.Column(db.Integer, primary_key = True)
+    member1_id = db.Column(db.Integer, db.ForeignKey('kgpian.id'), nullable = False)
+    member1 = db.relationship('Kgpian', foreign_keys = [member1_id])
+
+    member2_id = db.Column(db.Integer, db.ForeignKey('kgpian.id'), nullable = False)
+    member2 = db.relationship('Kgpian', foreign_keys = [member2_id])
+
+    member3_id = db.Column(db.Integer, db.ForeignKey('kgpian.id'), nullable = False)
+    member3 = db.relationship('Kgpian', foreign_keys = [member3_id])
+
+    year = db.Column(db.DateTime, nullable = False) # Just chose the same year.
+    regional_site = db.Column(db.Enum(RegionalSite), nullable = False)
 
 admin.add_view(ModelView(Blog, db.session))
 admin.add_view(ModelView(Post, db.session))
@@ -122,4 +148,5 @@ admin.add_view(ModelView(Round, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Comment, db.session))
 admin.add_view(ModelView(Vote, db.session))
-admin.add_view(ModelView(Kgpians, db.session))
+admin.add_view(ModelView(Kgpian, db.session))
+admin.add_view(ModelView(Team, db.session))

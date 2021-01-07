@@ -101,7 +101,7 @@ def logout():
 def submitPost():
 
     isBlog = request.args.get('interview')
-    allTags = Tag.query.all()
+    allTags = all()
 
     if isBlog == 'True':
         blog_form = BlogForm()
@@ -147,7 +147,7 @@ def submitPost():
             tags = blog_form.tags.data.split()
 
             for ttag in tags:
-                tag = Tag.query.filter_by(name=ttag).first()
+                tag = filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
                     post_data.tags.append(tag)
@@ -169,7 +169,7 @@ def submitPost():
                     blog_id = blog_id,
                     selected = round.selected.data
                 )
-                tag = Tag.query.filter_by(name=current_round.company_name).first()
+                tag = filter_by(name=current_round.company_name).first()
                 if tag:
                     tag.isCompany = True
                 else:
@@ -226,7 +226,7 @@ def submitPost():
             tags = post_form.tags.data.split()
 
             for ttag in tags:
-                tag = Tag.query.filter_by(name=ttag).first()
+                tag = filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
                     post_data.tags.append(tag)
@@ -342,101 +342,88 @@ def upvote_downvote(post_or_comment, id):
         except: 
             flash('Error in adding your vote')
     
-    return json.dumps(voted_obj.votes_count); 
-
-
-# Leaderboard route
-
-@app.route('/leaderboard')
-def leaderboard():
-    page = request.args.get('page', 1, int)
-    order = request.args.get('order')
-    if order == 'BY_USERNAME_ASC':
-        kgpians = Kgpians.query.order_by(Kgpians.username.asc()).paginate(per_page=100, page=page)
-    elif order == 'BY_USERNAME_DSC':
-        kgpians = Kgpians.query.order_by(Kgpians.username.desc()).paginate(per_page=100, page=page)
-    elif order == 'BY_RATING_ASC':
-        kgpians = Kgpians.query.order_by(Kgpians.rating.asc()).paginate(per_page=100, page=page)
-    elif order == 'BY_MAXRATING_ASC':
-        kgpians = Kgpians.query.order_by(Kgpians.maxrating.asc()).paginate(per_page=100, page=page)
-    elif order == 'BY_MAXRATING_DSC':
-        kgpians = Kgpians.query.order_by(Kgpians.maxrating.desc()).paginate(per_page=100, page=page)
-    else:
-        kgpians = Kgpians.query.order_by(Kgpians.rating.desc()).paginate(per_page=100, page=page)
-    return render_template('leaderboard.j2', kgpians=kgpians, order=order)
-
-# def fetchAllKgpians(): 
-#     KGPCodes = [1355, 504]
-#     MAX_PAGES = 10
-
-#     # [username, num_contests, rating]
-#     ratingList = []
-#     for code in KGPCodes :
-#         for page in range(1, MAX_PAGES): 
-#             url = f'https://codeforces.com/ratings/organization/1355/page/{page}'
-#             html_text = requests.get(url).text
-#             parsed = soup(html_text, 'html.parser')
-
-#             parsed.find('select', {'name' : 'organizationId'}).
-#                 find('option', selected=True).
-#                 text.split()[-1] ## Find the number of users    
-
-
-#             tdList = parsed.find('div', class_ = 'ratingsDatatable').
-#                     find('table').find_all('td')
-
-#             for i in range(0, len(tdList), 4): 
-#                 ratingList.append(
-#                     {'username' : td[i + 1].text, 'num_contests' : td[i+ 2].text, 'rating' : ''}
-#                 )
-#             inactive = None
-#             try: 
-#                 inactive = parsed.find('div', class_= 'pagination').
-#                         find('span', class_ ='inactive').text
-#             if inactive == '←':
-#                 print(page)
-#                 break
+    return json.dumps(voted_obj.votes_count)
 
 def fetchAllKgpians(): 
-    KGPCodes = [1355, 504]
+    KGPCodes = [1355, 504, 19428, 15991, 18251]
     MAX_PAGES, USERS_PER_PAGE = 10, 200
 
     users = []
-    for code in KGPCodes: 
-        num_pages = MAX_PAGES
-        for page in range(1, MAX_PAGES + 1):
-            url = f'https://codeforces.com/ratings/organization/{code}/page/{page}'
-            reqData = requests.get(url).text
-            html_text = requests.get(url).text
-            parsed = soup(html_text, 'html.parser')
+    try: 
+        for code in KGPCodes: 
+            num_pages = MAX_PAGES
+            for page in range(1, MAX_PAGES + 1):
+                url = f'https://codeforces.com/ratings/organization/{code}/page/{page}'
+                reqData = requests.get(url).text
+                html_text = requests.get(url).text
+                parsed = soup(html_text, 'html.parser')
 
-            if page == 1: 
-                ## set num_pages
-                num_users = int(
-                    parsed.find('select', {'name' : 'organizationId'}).\
-                        find('option', selected=True).\
-                        text.split()[-1]
-                )
-                num_pages = (num_users + USERS_PER_PAGE - 1)//USERS_PER_PAGE    # ceil
-            tdList = parsed.find('div', class_='ratingsDatatable').\
-                find('table').find_all('td')[1::4]
+                if page == 1: 
+                    ## set num_pages
+                    num_users = int(
+                        parsed.find('select', {'name' : 'organizationId'}).\
+                            find('option', selected=True).\
+                            text.split()[-1]
+                    )
+                    num_pages = (num_users + USERS_PER_PAGE - 1)//USERS_PER_PAGE    # ceil
+                tdList = parsed.find('div', class_='ratingsDatatable').\
+                    find('table').find_all('td')[1::4]
 
-            for td in tdList: 
-                users.append(td.text.strip())
+                for td in tdList: 
+                    users.append(td.text.strip())
 
-            if page == num_pages : 
-                break
+                if page == num_pages : 
+                    break
+    except: 
+        print('Error in scraping kgpians usernames from cf')
     return users
 
-def KgpiansCfData(): 
+def fetchKgpiansCfData(): 
     users = fetchAllKgpians()
     url = 'https://codeforces.com/api/user.info?handles=' + ';'.join(users)
     reqData = requests.get(url).json()
 
-    usersData = []
-    if(reqData['status'] == 'FAILED'):
-        print(reqData['comment'])
-    elif reqData['status'] == 'OK' : 
-        usersData = reqData['result']
+    usersDict = {}
+    try: 
+        if(reqData['status'] == 'FAILED'):
+            print(reqData['comment'])
+        elif reqData['status'] == 'OK' : 
+            for data in reqData['result']: 
+                usersDict[data['handle']] = data
+    except: 
+        print('Error in fetching users info from cf')
 
-    return str(usersData) 
+    return usersDict
+
+# Leaderboard route
+@app.route('/leaderboard')
+def leaderboard():
+    kgpians = Kgpian.query.all()
+    teams = Team.query.all()
+    return render_template('leaderboard.j2', kgpians=kgpians, teams = teams)
+
+# Should be updated differently (like a cron job)
+@app.route('/updateUsersList')
+def updateUsersList():
+    try: 
+        usersDict = fetchKgpiansCfData() 
+        users = Kgpian.query.all()
+
+        for user in users:
+            if user.username in usersDict: 
+                user.rating = usersDict[user.username]['rating']
+                user.rating = usersDict[user.username]['maxRating']
+                usersDict[user.username]['updated'] = True
+        
+        for handle, data in usersDict.items(): 
+            if 'exists' not in data:
+                user = Kgpian(
+                    username = handle,
+                    rating = data['rating'],
+                    max_rating = data['maxRating']
+                )
+                db.session.add(user)
+        db.session.commit()
+        return 'Updated the kgpians data'
+    except: 
+        return 'Error in updating kgpians Data'
