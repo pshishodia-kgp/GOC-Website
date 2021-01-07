@@ -1,0 +1,55 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class="container" style="min-width:1024px">
+    <table class="table table-hover table-bordered" style="margin-top:20px">
+        <colgroup>
+            <col span="1" style="width:70%"></col>
+            <col span="1" style="width:15%"></col>
+            <col span="1" style="width:15%"></col>
+        </colgroup>
+        <thead style="color:white; background-color:#212529">
+            <tr>
+                <th scope="col">
+                    Username
+                    <a href="{{ url_for('leaderboard', order='BY_USERNAME_ASC')}}" class="arrow arrow-up"></a>
+                    <a href="{{ url_for('leaderboard', order='BY_USERNAME_DSC')}}" class="arrow arrow-down"></a>
+                </th>
+                <th scope="col">
+                    Rating
+                    <a href="{{ url_for('leaderboard', order='BY_RATING_ASC')}}" class="arrow arrow-up"></a>
+                    <a href="{{ url_for('leaderboard', order='BY_RATING_DSC')}}" class="arrow arrow-down"></a>
+                </th>
+                <th scope="col">
+                    Max Rating
+                    <a href="{{ url_for('leaderboard', order='BY_MAXRATING_ASC')}}" class="arrow arrow-up"></a>
+                    <a href="{{ url_for('leaderboard', order='BY_MAXRATING_DSC')}}" class="arrow arrow-down"></a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for kgpian in kgpians.items %}
+            <tr>
+                <td>{{kgpian.username}}</td>
+                <td>{{kgpian.rating}}</td>
+                <td>{{kgpian.maxrating}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <nav aria-label="leaderboard pagination">
+    <ul class="pagination">
+        {% if kgpians.has_prev %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('leaderboard', page=kgpians.prev().page, order=order) }}">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('leaderboard', page=kgpians.prev().page, order=order) }}">{{ kgpians.prev().page }}</a></li>
+        {% endif%}
+        <li class="page-item active"><a class="page-link" href="{{ url_for('leaderboard', page=kgpians.page, order=order) }}">{{ kgpians.page }}</a></li>
+        {% if kgpians.has_next %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('leaderboard', page=kgpians.next().page, order=order) }}">{{ kgpians.next().page }}</a></li>
+            <li class="page-item"><a class="page-link" href="{{ url_for('leaderboard', page=kgpians.next().page, order=order) }}">Next</a></li>
+        {% endif %}
+    </ul>
+    </nav>
+</div>
+
+{% endblock %}
