@@ -5,6 +5,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from goc import app, db, USERNAME_REGEX_NOT
 from goc.forms import *
 from goc.models import *
+from bs4 import BeautifulSoup as soup
+import requests
 
 
 # Home Page
@@ -362,3 +364,79 @@ def leaderboard():
     else:
         kgpians = Kgpians.query.order_by(Kgpians.rating.desc()).paginate(per_page=100, page=page)
     return render_template('leaderboard.j2', kgpians=kgpians, order=order)
+
+# def fetchAllKgpians(): 
+#     KGPCodes = [1355, 504]
+#     MAX_PAGES = 10
+
+#     # [username, num_contests, rating]
+#     ratingList = []
+#     for code in KGPCodes :
+#         for page in range(1, MAX_PAGES): 
+#             url = f'https://codeforces.com/ratings/organization/1355/page/{page}'
+#             html_text = requests.get(url).text
+#             parsed = soup(html_text, 'html.parser')
+
+#             parsed.find('select', {'name' : 'organizationId'}).
+#                 find('option', selected=True).
+#                 text.split()[-1] ## Find the number of users    
+
+
+#             tdList = parsed.find('div', class_ = 'ratingsDatatable').
+#                     find('table').find_all('td')
+
+#             for i in range(0, len(tdList), 4): 
+#                 ratingList.append(
+#                     {'username' : td[i + 1].text, 'num_contests' : td[i+ 2].text, 'rating' : ''}
+#                 )
+#             inactive = None
+#             try: 
+#                 inactive = parsed.find('div', class_= 'pagination').
+#                         find('span', class_ ='inactive').text
+#             if inactive == '←':
+#                 print(page)
+#                 break
+
+def fetchAllKgpians(): 
+    KGPCodes = [1355, 504]
+    MAX_PAGES, USERS_PER_PAGE = 10, 200
+
+    users = []
+    for code in KGPCodes: 
+        num_pages = MAX_PAGES
+        for page in range(1, MAX_PAGES + 1):
+            url = f'https://codeforces.com/ratings/organization/{code}/page/{page}'
+            reqData = requests.get(url).text
+            html_text = requests.get(url).text
+            parsed = soup(html_text, 'html.parser')
+
+            if page == 1: 
+                ## set num_pages
+                num_users = int(
+                    parsed.find('select', {'name' : 'organizationId'}).\
+                        find('option', selected=True).\
+                        text.split()[-1]
+                )
+                num_pages = (num_users + USERS_PER_PAGE - 1)//USERS_PER_PAGE    # ceil
+            tdList = parsed.find('div', class_='ratingsDatatable').\
+                find('table').find_all('td')[1::4]
+
+            for td in tdList: 
+                users.append(td.text.strip())
+
+            if page == num_pages : 
+                break
+    return users
+
+def KgpiansCfData(): 
+    users = fetchAllKgpians()
+    url = 'https://codeforces.com/api/user.info?handles=' + ';'.join(users)
+    reqData = requests.get(url).json()
+
+    usersData = []
+    if(reqData['status'] == 'FAILED'):
+        print(reqData['comment'])
+    elif reqData['status'] == 'OK' : 
+        usersData = reqData['result']
+
+    return str(usersData) 
