@@ -101,7 +101,7 @@ def logout():
 def submitPost():
 
     isBlog = request.args.get('interview')
-    allTags = all()
+    allTags = Tag.query.all()
 
     if isBlog == 'True':
         blog_form = BlogForm()
@@ -147,7 +147,7 @@ def submitPost():
             tags = blog_form.tags.data.split()
 
             for ttag in tags:
-                tag = filter_by(name=ttag).first()
+                tag = Tag.query.filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
                     post_data.tags.append(tag)
@@ -169,7 +169,7 @@ def submitPost():
                     blog_id = blog_id,
                     selected = round.selected.data
                 )
-                tag = filter_by(name=current_round.company_name).first()
+                tag = Tag.query.filter_by(name=current_round.company_name).first()
                 if tag:
                     tag.isCompany = True
                 else:
@@ -226,7 +226,7 @@ def submitPost():
             tags = post_form.tags.data.split()
 
             for ttag in tags:
-                tag = filter_by(name=ttag).first()
+                tag = Tag.query.filter_by(name=ttag).first()
                 if not tag:
                     tag = Tag(name=ttag)
                     post_data.tags.append(tag)
