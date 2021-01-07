@@ -361,4 +361,4 @@ def leaderboard():
         kgpians = Kgpians.query.order_by(Kgpians.maxrating.desc()).paginate(per_page=100, page=page)
     else:
         kgpians = Kgpians.query.order_by(Kgpians.rating.desc()).paginate(per_page=100, page=page)
-    return render_template('leaderboard.j2', kgpians=kgpians)
+    return render_template('leaderboard.j2', kgpians=kgpians, order=order)
