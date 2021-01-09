@@ -1,4 +1,4 @@
-import os, datetime, timeago
+import os, datetime, timeago, subprocess
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -23,5 +23,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 admin = Admin(app)
 USERNAME_REGEX_NOT = '[^a-zA-Z0-9._-]'
+
+def convertHTML(text):
+    with open('demo.txt', 'w') as f:
+        f.write(text)
+    result = subprocess.run(args=['pandoc', 'demo.txt'], shell=True, capture_output=True)
+    return result.stdout.decode()
+
+app.jinja_env.globals['convertHTML'] = convertHTML
 
 from goc import routes
