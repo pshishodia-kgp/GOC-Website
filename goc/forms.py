@@ -81,24 +81,24 @@ class LoginForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()]) 
-    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    content = StringField('Content', validators=[DataRequired()])
     tags = StringField('Tag', validators=[DataRequired()])
     submit = SubmitField('Add Post')
 
 class ShortlistingRound(FlaskForm):
     company_name = StringField('Company Name', validators=[DataRequired()])
-    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    content = StringField('Content', validators=[DataRequired()])
     selected = BooleanField('Got Selected?', default = False)
 
 class InterviewRound(ShortlistingRound):
     joining = BooleanField('Will be joining?', default=False)
 
 class Shortlisting(FlaskForm):
-    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    content = StringField('Content', validators=[DataRequired()])
     rounds = FieldList(FormField(ShortlistingRound))
 
 class Interview(FlaskForm): 
-    content = StringField('Content', validators=[DataRequired()], widget=TextArea())
+    content = StringField('Content', validators=[DataRequired()])
     rounds = FieldList(FormField(InterviewRound))
 
 class BlogForm(PostForm):    
