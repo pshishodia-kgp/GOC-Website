@@ -29,10 +29,10 @@
         <small>{{ timeago(comment.published_at, datetime) }}
         {% if not onBlog %}
             | <a href = "{{ '/post?post_id=' + (comment.post.id | string) }}">
-            {{ convertHTML(comment.post.title) }}</a> 
+            {{ comment.post.title }}</a> 
         {% endif %}
         </small>
-        {{ convertHTML(comment.content) }}
+        {{ comment.content }}
         {% if onBlog %}
             <small> 
                 <a role = "button" data-toggle = "collapse"

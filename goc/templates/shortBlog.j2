@@ -1,6 +1,6 @@
 <hr> 
-<h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ convertHTML(post.title) }}</a></h2> 
-{{ convertHTML(post.content) }}
+<h2><a href = "{{'/post?post_id=' + post.id|string}}">{{ post.title }}</a></h2> 
+{{ post.content }}
 
 <div> 
 <span class = "badge"> {{ timeago(post.published_at, datetime) }} |
