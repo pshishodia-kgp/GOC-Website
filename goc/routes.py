@@ -1,4 +1,4 @@
-import json
+import json, subprocess
 from sqlalchemy import and_
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user, logout_user, login_required
@@ -96,6 +96,12 @@ def logout():
 
 # blog submission route
 
+def convertHTML(text):
+    with open('demo.txt', 'w') as f:
+        f.write(text)
+    result = subprocess.run(args=['pandoc', 'demo.txt'], shell=True, capture_output=True)
+    return result.stdout.decode()
+
 @app.route('/createPost',methods = ['POST','GET'])
 @login_required
 def submitPost():
@@ -117,8 +123,8 @@ def submitPost():
         if(blog_form.validate_on_submit()):
 
             post_data = Post(
-                title = str(blog_form.title.data),
-                content = str(blog_form.content.data),
+                title = convertHTML(str(blog_form.title.data)),
+                content = convertHTML(str(blog_form.content.data)),
                 author_id = current_user.id
             )
 
@@ -132,8 +138,8 @@ def submitPost():
 
             blog_data = Blog(            
                 post_id = post_id,
-                shortlisting_content = str(blog_form.shortlisting.content.data),
-                interview_content = str(blog_form.interview.content.data)
+                shortlisting_content = convertHTML(str(blog_form.shortlisting.content.data)),
+                interview_content = convertHTML(str(blog_form.interview.content.data))
             )
 
             try:
@@ -165,7 +171,7 @@ def submitPost():
                 current_round = Round(
                     round_type = RoundType.shortlisting,
                     company_name = str(round.company_name.data),
-                    content = str(round.content.data),
+                    content = convertHTML(str(round.content.data)),
                     blog_id = blog_id,
                     selected = round.selected.data
                 )
@@ -186,7 +192,7 @@ def submitPost():
                 current_round = Round(
                     round_type = RoundType.interview,
                     company_name = str(round.company_name.data),
-                    content = str(round.content.data),
+                    content = convertHTML(str(round.content.data)),
                     blog_id = blog_id,
                     selected = round.selected.data,
                     joining = round.joining.data
@@ -210,10 +216,10 @@ def submitPost():
 
         if post_form.validate_on_submit():
             tags = [str(x) for x in set(post_form.tags.data)]
-
+            
             post_data = Post(
-                title = str(post_form.title.data),
-                content = str(post_form.content.data),
+                title = convertHTML(str(post_form.title.data)),
+                content = convertHTML(str(post_form.content.data)),
                 author_id = current_user.id
             )
 

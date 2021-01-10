@@ -5,4 +5,12 @@
         {{ post_form.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none", 
         placeholder = "Enter your post here") }}
     </div>
+    <script>
+        var content = new SimpleMDE({
+            element: $('#content')[0]
+        });
+        content.codemirror.on("change", function(){
+            $('#content').val('content.codemirror.getValue()');
+        });
+    </script>
 {% endblock %}

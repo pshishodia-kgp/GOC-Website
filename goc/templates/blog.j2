@@ -9,14 +9,14 @@
         <a href = "{{ '/profile/' + post.author.username}}">{{ post.author.username }}</a> 
     </span> 
     <hr> 
-    <p>{{ post.content }}</p> 
+    <p>{{ post.content }}</p>
 
     <hr> 
 
     {% if post.blog %}
         <div id = "shortlisting-rounds"> 
             <h4> ShortListing Rounds </h4> 
-            <p>{{ post.blog.shortlisting_content}}</p> 
+            {{ post.blog.shortlisting_content }}
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
             {% for round in post.blog.rounds %}
@@ -54,7 +54,7 @@
 
         <div id = "interview-rounds"> 
             <h4> Interview Rounds </h4> 
-            <p>{{ post.blog.interview_content}}</p> 
+            {{ post.blog.interview_content }}
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
             {% for round in post.blog.rounds %}

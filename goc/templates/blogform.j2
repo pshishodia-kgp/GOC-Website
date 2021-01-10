@@ -20,10 +20,10 @@
         placeholder = "Overall Experience") }}
     </div>
 
-    <div class = "form-group" style = "margin-bottom: 100px"> 
+    <div class = "form-group" style = "margin-bottom: 50px"> 
         {{ post_form.shortlisting.content(class = "form-control row border-top-0 border-left-0 border-right-0 shadow-none outline-none"
         , placeholder = "Shortlisting Round's Overall Experience") }}</p>
-
+        
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             {% for round in post_form.shortlisting.rounds %}
                 <li class="nav-item">
@@ -120,4 +120,48 @@
         </div>
     </div> 
 
+
+<script>
+    var content = new SimpleMDE({
+        element: $('#content')[0]
+    });
+    content.codemirror.on("change", function(){
+        $('#content').val('content.codemirror.getValue()');
+    });
+
+    var shortlisting_content = new SimpleMDE({
+        element: $('#shortlisting-content')[0]
+    });
+    shortlisting_content.codemirror.on("change", function(){
+        $('#shortlisting-content').val('shortlisting_content.codemirror.getValue()');
+    });
+
+    var interview_content = new SimpleMDE({
+        element: $('#interview-content')[0]
+    });
+    interview_content.codemirror.on("change", function(){
+        $('#interview-content').val('interview_content.codemirror.getValue()');
+    });
+
+    {% for round in post_form.shortlisting.rounds %}
+    var simplemde = new SimpleMDE({
+        element: $('#'+'{{round.name}}'+'-content')[0]
+    });
+    simplemde.codemirror.on("change", function(){
+        $('#'+'{{round.name}}'+'-content').val('simplemde.codemirror.getValue()');
+    });
+    {% endfor %} 
+
+    {% for round in post_form.interview.rounds %}
+    var simplemde = new SimpleMDE({
+        element: $('#'+'{{round.name}}'+'-content')[0]
+    });
+    simplemde.codemirror.on("change", function(){
+        $('#'+'{{round.name}}'+'-content').val('simplemde.codemirror.getValue()');
+    });
+    {% endfor %}
+
+    $('.CodeMirror').css({'min-height':'50px', 'width':'auto'});
+    $('.CodeMirror-scroll').css({'min-height':'50px', 'width':'auto'});
+</script>
 {% endblock %}
