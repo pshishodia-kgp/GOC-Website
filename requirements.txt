@@ -20,3 +20,6 @@ sqlparse==0.3.1
 timeago==1.0.15
 urllib3==1.25.8
 WTForms==2.3.3
+Requirement already satisfied: gunicorn in /home/pshishod2645/anaconda3/lib/python3.7/site-packages (20.0.4)
+Requirement already satisfied: setuptools>=3.0 in /home/pshishod2645/anaconda3/lib/python3.7/site-packages (from gunicorn) (45.2.0.post20200210)
+gunicorn==20.0.4
