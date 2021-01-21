@@ -113,7 +113,9 @@
 
     </div> 
     <hr>
-    {% include 'comments.j2'%}
+    {% with comments = post.comments, media = post, media_type = 'post' %}
+        {% include 'comments.j2'%}
+    {% endwith %}
 </div>
 
 </div> 

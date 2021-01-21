@@ -1,0 +1,52 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class = "container mt-3"> 
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-link active" id="upcoming-streams-tab" data-toggle="tab" role="tab"
+        href="#upcoming-streams" aria-controls="upcoming-streams" aria-selected="true">Upcoming</a>
+    
+    <a class="nav-link" id="div1-streams-tab" data-toggle="tab" role="tab" 
+        href="#div1-streams" aria-controls="div1-streams" aria-selected="false">Div 1</a>
+    
+    <a class="nav-link" id="div2-streams-tab" data-toggle="tab" role="tab" 
+        href="#div2-streams" aria-controls="div2-streams" aria-selected="false">Div 2</a>
+    
+    <a class="nav-link" id="div3-streams-tab" data-toggle="tab" role="tab" 
+        href="#div3-streams" aria-controls="div3-streams" aria-selected="false">Div 3</a>
+  </div>
+</nav>
+
+<div class="tab-content mt-3" id="nav-tabContent">
+    <div class="tab-pane fade show active" role="tabpanel"
+    id="upcoming-streams" aria-labelledby="upcoming-streams-tab">
+        {% with streams = upcomingStreams %}
+            {% include 'streamList.j2' %}
+        {% endwith %}
+    </div>
+
+    <div class="tab-pane fade mt-3"  role="tabpanel"
+    id="div1-streams">
+        {% with streams = streams | selectattr("stream_type.value", "equalto", 'div1') %}
+            {% include 'streamList.j2' %}
+        {% endwith %}
+    </div>
+
+    <div class="tab-pane fade mt-3"  role="tabpanel"
+    id="div2-streams">
+        {% with streams = streams | selectattr("stream_type.value", "equalto", 'div2') %}
+            {% include 'streamList.j2' %}
+        {% endwith %}
+    </div>
+
+    <div class="tab-pane fade mt-3"  role="tabpanel"
+    id="div3-streams">
+        {% with streams = streams | selectattr("stream_type.value", "equalto", 'div3')  %}
+            {% include 'streamList.j2' %}
+        {% endwith %}
+    </div>
+</div>
+</div> 
+
+{% endblock %}

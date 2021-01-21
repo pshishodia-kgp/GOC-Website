@@ -38,3 +38,8 @@ th{
     -webkit-transform: rotate(45deg);
     bottom: 17px;
 }
+
+.thumbnail:hover{
+    border-left: solid yellow; 
+    border-width: 0.2rem; 
+}

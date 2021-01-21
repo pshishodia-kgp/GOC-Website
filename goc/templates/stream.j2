@@ -1,0 +1,15 @@
+{% extends 'base.j2' %}
+{% block content %}
+
+<div class = "container"> 
+<div class = "col-md-12"> 
+<iframe width="811" height="456" 
+src="{{ 'https://www.youtube.com/embed/' + stream.youtube_code }}" 
+frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<hr> 
+{% with comments = stream.comments, media = stream, media_type = 'stream' %}
+    {% include 'comments.j2' %}
+{% endwith %}
+</div> 
+
+{% endblock %}
