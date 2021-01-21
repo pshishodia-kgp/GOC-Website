@@ -1,0 +1,8 @@
+<div class = "container d-flex-column"> 
+{% for stream in streams %}
+    <div class = "d-flex my-3 thumbnail"> 
+    <a href = "{{ '/stream/' + (stream.id | string)}}"> <img src="{{ 'https://i.ytimg.com/vi/' + stream.youtube_code + '/maxresdefault.jpg' }}"
+        class="flex-shrink-0 img-fluid" style = "height: 250px"></a> 
+    </div> 
+    {% endfor %}
+</div> 

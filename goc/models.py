@@ -3,6 +3,7 @@ from flask_admin.contrib.sqla import ModelView
 from datetime import datetime
 from flask_login import UserMixin
 import enum
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
 Association = db.Table('association_table',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
@@ -25,6 +26,11 @@ class Blog(db.Model):
     interview_content = db.Column(db.Text, nullable=True)
     rounds = db.relationship('Round', backref='blog', lazy=True)
 
+class ContentType(enum.Enum): 
+    post = 'post'
+    comment = 'comment'
+    stream = 'stream'
+  
 class PostOrComment(enum.Enum): 
     post = 'post'
     comment = 'comment'
@@ -33,6 +39,7 @@ class Vote(db.Model):
     vote_value = db.Column(db.Integer, default = 0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     vote_on = db.Column(db.Enum(PostOrComment), nullable = False)
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,7 +103,6 @@ class User(db.Model, UserMixin):
 class Comment(db.Model): 
     id = db.Column(db.Integer, primary_key = True)
     content = db.Column(db.Text, nullable = False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable = False)
     parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     parent = db.relationship(lambda: Comment, remote_side = id, backref = 'children')
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
@@ -104,6 +110,25 @@ class Comment(db.Model):
     published_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     votes = db.relationship('Vote', secondary = CommentVotes, lazy = "dynamic")
     votes_count = db.Column(db.Integer, default = 0)
+
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), default = None)
+    # problem_id = db.Column(db.Integer, db.ForeignKey('problem.id'))
+    stream_id = db.Column(db.String, db.ForeignKey('stream.id'), default = None)
+
+    @hybrid_property
+    def media(self): 
+        if self.post_id: 
+            return self.post
+        elif self.stream_id: 
+            return self.stream 
+        return None
+
+    @hybrid_method
+    def voteStatus(self, user): 
+        vote = next((vote for vote in self.votes.all() if vote.user_id == user.id ), None)
+        return vote
+
+
 
     def __repr__(self): 
         return f"Comment('{self.content}', by: {self.author.username})"
@@ -140,6 +165,17 @@ class Team(db.Model):
     year = db.Column(db.DateTime, nullable = False) # Just chose the same year.
     regional_site = db.Column(db.Enum(RegionalSite), nullable = False)
 
+class StreamType(enum.Enum): 
+    div1 = 'div1'
+    div2 = 'div2'
+    div3 = 'div3'
+class Stream(db.Model): 
+    id = db.Column(db.Integer, primary_key = True)
+    youtube_code = db.Column(db.String, unique = True)
+    scheduled_at = db.Column(db.DateTime)
+    comments = db.relationship('Comment', backref = 'stream', lazy = True)
+    stream_type = db.Column(db.Enum(StreamType), nullable = False)
+
 admin.add_view(ModelView(Blog, db.session))
 admin.add_view(ModelView(Post, db.session))
 admin.add_view(ModelView(Tag, db.session))
@@ -150,3 +186,4 @@ admin.add_view(ModelView(Comment, db.session))
 admin.add_view(ModelView(Vote, db.session))
 admin.add_view(ModelView(Kgpian, db.session))
 admin.add_view(ModelView(Team, db.session))
+admin.add_view(ModelView(Stream, db.session))

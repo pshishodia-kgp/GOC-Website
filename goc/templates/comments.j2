@@ -5,11 +5,11 @@
             aria-expanded = "true">Add Comment</a></h5>
     </small>  
 
-    <form action = '/add_comment' id = "direct-reply" class= "collapse" method = "POST"> 
+    <form action = "{{'/add_comment/' + media_type + '/' +  media.id | string}}" id = "direct-reply" class= "collapse" method = "POST"> 
         <textarea name = "content" class = "form-control"> </textarea>  
         <input type = "hidden" name = "depth" value = "0" />
         <input type = "hidden" name = "parent_id" value = "-1" />
-        <input type = "hidden" name = "post_id" value = "{{ post.id }}" /> 
+        <input type = "hidden" name = "media_id" value = "{{ media.id }}" /> 
         <button type = "submit" class = "mt-2 btn btn-primary btn-sm">Comment</button>
     </form> 
 
@@ -26,5 +26,5 @@
                 {% endif %}
             {% endfor %}
     {% endmacro %}
-    {{ recurse(post.comments | selectattr("parent", "equalto", None)) }}
+    {{ recurse(comments | selectattr("parent", "equalto", None)) }}
 </div>

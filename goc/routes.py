@@ -7,6 +7,7 @@ from goc.forms import *
 from goc.models import *
 from bs4 import BeautifulSoup as soup
 import requests
+import datetime
 
 
 # Home Page
@@ -34,12 +35,8 @@ def postList():
     tags = Tag.query.all()
     return render_template('allblogs.j2', title='Posts', posts=posts, allTags=tags, tag_url=tag_url, interview=interview)
 
-@app.route('/post')           ## get single blog having given id
-def post():
-    post_id = request.args.get('post_id')
-    if not post_id:
-        return redirect(url_for('postList'))
-
+@app.route('/post/<int:post_id>')           ## get single blog having given id
+def post(post_id):
     post = Post.query.filter_by(id=int(post_id)).first()
 
     if post:
@@ -251,32 +248,33 @@ def submitPost():
     else: 
         return redirect(url_for('home'))
 
-@app.route('/add_comment', methods = ['GET', 'POST'])
+@app.route('/add_comment/<string:media_type>/<int:media_id>', methods = ['GET', 'POST'])
 @login_required
-def addComment():
-    try: 
-        form = request.form
-        parent_id = int(form.get('parent_id'))
-        # Should actually check in database. Works in general until user tries to abuse the system
-        parent_id = parent_id if parent_id != -1 else None
-        
-        # Put checks here. 
-        comment = Comment(
-            content = form.get('content'),
-            post_id = int(form.get('post_id')),
-            parent_id = parent_id,
-            author_id = current_user.id,
-            depth = int(form.get('depth')),
-        )
-
-        db.session.add(comment)
-        db.session.commit()
-    except: 
-        return 'Error in adding comment'
-    if form.get('post_id'): 
-        return redirect('/post?post_id=' + form.get('post_id'))
-    return redirect(url_form('home'))
-
+def addComment(media_type, media_id):
+    # try: 
+    form = request.form
+    parent_id = int(form.get('parent_id'))
+    # Should actually check in database. Works in general until user tries to abuse the system
+    parent_id = parent_id if parent_id != -1 else None
+    
+    # Put checks here. 
+    comment = Comment(
+        content = form.get('content'),
+        parent_id = parent_id,
+        author_id = current_user.id,
+        depth = int(form.get('depth')),
+    )
+    if media_type == 'post': 
+        comment.post_id = media_id
+    elif media_type == 'stream': 
+        comment.stream_id = media_id
+    else : 
+        redirect('/' + media_type + '/' + str(media_id))
+    db.session.add(comment)
+    db.session.commit()
+    # except: 
+    #     return 'Error in adding comment'
+    return redirect('/' + media_type + '/' + str(media_id))
 
 @app.route('/profile/<username>')
 def profile(username): 
@@ -427,3 +425,16 @@ def updateUsersList():
         return 'Updated the kgpians data'
     except: 
         return 'Error in updating kgpians Data'
+
+@app.route('/streams')
+def streams():
+    streams = Stream.query.order_by(Stream.scheduled_at.desc()).all()
+    upcoming = [stream for stream in streams if stream.scheduled_at + datetime.timedelta(hours = 2) >= datetime.datetime.utcnow()]
+    return render_template('streams.j2', streams = streams, upcomingStreams = upcoming)
+
+@app.route('/stream/<int:id>')
+def stream(id): 
+    stream = Stream.query.get(id)
+    if not stream: 
+        return redirect(url_for('streams'))
+    return render_template('stream.j2', stream = stream)
